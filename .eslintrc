@@ -1,0 +1,26 @@
+{
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "env": {
+    "browser": true,
+    "amd": true,
+    "es6": true,
+    "node": true,
+    "mocha": true
+  },
+  "rules": {
+    "space-before-function-paren": [1, {"anonymous": "never", "named": "never"}],
+    "comma-spacing": [1, { "before": false, "after": true }],
+    "space-infix-ops": 1,
+    "semi": [1, "never" ],
+    "comma-dangle": 1,
+    "quotes": [ 1, "single" ],
+    "no-undef": 1,
+    "no-extra-semi": 1,
+    "no-trailing-spaces": [1, { "skipBlankLines": true }],
+    "no-unreachable": 1
+  }
+}

@@ -1,11 +1,16 @@
 package io.fata.universal.audio;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.io.IOException;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.net.Uri;
 import android.media.AudioManager;
-
+import android.content.Context;
+import android.util.Log;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -13,14 +18,8 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.io.IOException;
-import android.util.Log;
-
 public class UniversalAudioPlayer {
-  protected static final int __id__ = 0;
+  protected static int __id__ = 0;
 
   protected int id;
   protected MediaPlayer player = null;
@@ -64,6 +63,7 @@ public class UniversalAudioPlayer {
   public void addTextTrack(String v) {
   }
   public Boolean canPlayType(String mediaType) {
+    return false;
   }
   public void load() {
   }
@@ -114,7 +114,7 @@ public class UniversalAudioPlayer {
       player = new MediaPlayer();
       player.setAudioStreamType(AudioManager.STREAM_MUSIC);
       try {
-        player.setDataSource(fileName);
+        player.setDataSource(source);
       } catch(IOException e) {
         Log.e("UniversalAudioModule", "Exception", e);
       }
