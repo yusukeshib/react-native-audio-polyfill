@@ -27,22 +27,25 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
 public class UniversalAudioPlayer {
+
+  protected final String TAG = "ReactNative";
+
   protected static int __id__ = 0;
 
   protected int id;
   protected MediaPlayer player = null;
   protected ReactContext context;
-  protected WritableMap data = Arguments.createMap();
+  protected HashMap<String, Object> data = new HashMap<>();
   protected Timer timer;
 
   protected void emitEvent(String type) {
-    WritableMap data = Arguments.createMap();
-    this.emitEvent(type, data);
-  }
-  protected void emitEvent(String type, WritableMap data) {
-    data.putString("type", type);
+    WritableMap map = Arguments.createMap();
+    // map.merge(this.data);
+    map.putInt("audioId", this.id);
+    map.putString("type", type);
+
     RCTDeviceEventEmitter emitter = context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
-    emitter.emit("UniversalAudioEvent", data);
+    emitter.emit("UniversalAudioEvent", map);
 
   }
   public UniversalAudioPlayer(ReactContext context) {
@@ -77,23 +80,29 @@ public class UniversalAudioPlayer {
     this.setTextTracks("");
     this.setVolume(1.0);
   }
-  protected void setData(String key, double value) {
-    this.data.putDouble(key, value);
+  protected void setData(String key, Double value) {
+    this.data.put(key, value);
   }
   protected void setData(String key, String value) {
-    this.data.putString(key, value);
+    this.data.put(key, value);
   }
   protected void setData(String key, Boolean value) {
-    this.data.putBoolean(key, value);
+    this.data.put(key, value);
   }
   protected double getDouble(String key) {
-    return this.data.getDouble(key);
+    Object value = this.data.get(key);
+    if(value == null) return 0.0;
+    return (double)value;
   }
   protected String getString(String key) {
-    return this.data.getString(key);
+    Object value = this.data.get(key);
+    if(value == null) return "";
+    return (String)value;
   }
   protected Boolean getBoolean(String key) {
-    return this.data.getBoolean(key);
+    Object value = this.data.get(key);
+    if(value == null) return false;
+    return (Boolean)value;
   }
   public int getId() {
     return this.id;
@@ -108,10 +117,8 @@ public class UniversalAudioPlayer {
     if(player == null) return;
     // TODO
   }
-  protected void play(int pos) {
-    if(player == null) return;
-    if(player.isPlaying()) return;
-    player.seekTo(pos);
+  protected void play(double pos) {
+    player.seekTo((int)(pos * 1000.0));
     player.start();
     this.emitEvent("play");
     this.emitEvent("playing");
@@ -123,7 +130,7 @@ public class UniversalAudioPlayer {
       @Override
       public void run() {
         if(player.isPlaying()) {
-          self.setData("currentTime", player.getCurrentPosition());
+          self.setData("currentTime", player.getCurrentPosition() / 1000.0);
           self.emitEvent("timeupdate");
         } else {
           timer.cancel();
@@ -133,7 +140,9 @@ public class UniversalAudioPlayer {
     }, 0, 1000);
   }
   public void play() {
-    int pos = player.getCurrentPosition();
+    if(player == null) return;
+    if(player.isPlaying()) return;
+    double pos = player.getCurrentPosition() / 1000.0;
     play(pos);
   }
   public void pause() {
@@ -185,7 +194,12 @@ public class UniversalAudioPlayer {
     // TODO
   }
   protected void _setDuration(double v) {
-    this.setData("duration", v);
+    double current = this.getDouble("duration");
+    if(current != v) {
+      this.setData("duration", v);
+      this.emitEvent("durationchange");
+    }
+    Log.v(TAG, "duration:" + current + "->" + v);
   }
   protected void _setEnded(Boolean v) {
     this.setData("ended", v);
@@ -250,40 +264,9 @@ public class UniversalAudioPlayer {
   }
   public void setSource(String source) {
 
+    Log.v(TAG, "source:" + source);
+
     player = new MediaPlayer();
-
-    // TODO: data-uri
-    int resid = context.getResources().getIdentifier(source, "raw", this.context.getPackageName());
-
-    try {
-
-      // resource
-      if(resid != 0) {
-        AssetFileDescriptor afd = context.getResources().openRawResourceFd(resid);
-        player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-        afd.close();
-      }
-      // remote
-      else if(source.startsWith("http://") || source.startsWith("https://")) {
-        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        player.setDataSource(source);
-      }
-      // file
-      else {
-        AssetFileDescriptor afd = context.getAssets().openFd(source);
-        player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-        afd.close();
-      }
-
-      this.emitEvent("loadstart");
-      player.prepareAsync();
-
-      this._setDuration(player.getDuration());
-      this.emitEvent("durationchange");
-
-    } catch (Exception e) {
-      Log.e("UniversalAudioModule", "Exception", e);
-    }
 
     final UniversalAudioPlayer self = this;
 
@@ -291,6 +274,7 @@ public class UniversalAudioPlayer {
     player.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
       @Override
       public synchronized void onBufferingUpdate(MediaPlayer mp, int percent) {
+        self._setDuration((double)player.getDuration() / 1000.0);
         self.emitEvent("progress");
       }
     });
@@ -361,9 +345,10 @@ public class UniversalAudioPlayer {
     player.setOnPreparedListener(new OnPreparedListener() {
       @Override
       public synchronized void onPrepared(MediaPlayer mp) {
+        self._setDuration((double)player.getDuration() / 1000.0);
         self.emitEvent("loadeddata");
         self.emitEvent("canplay");
-        if(self.getBoolean("autoPlay")) {
+        if(self.getBoolean("autoplay")) {
           self.play();
         }
       }
@@ -385,6 +370,39 @@ public class UniversalAudioPlayer {
       public synchronized void onTimedText(MediaPlayer mp, TimedText text) {
       }
     });
+
+    // TODO: data-uri
+    int resid = context.getResources().getIdentifier(source, "raw", this.context.getPackageName());
+
+    try {
+
+      // resource
+      if(resid != 0) {
+        AssetFileDescriptor afd = context.getResources().openRawResourceFd(resid);
+        player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+        afd.close();
+      }
+      // remote
+      else if(source.startsWith("http://") || source.startsWith("https://")) {
+        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        player.setDataSource(source);
+      }
+      // file
+      else {
+        AssetFileDescriptor afd = context.getAssets().openFd(source);
+        player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+        afd.close();
+      }
+
+      this.emitEvent("loadstart");
+      player.prepareAsync();
+
+    } catch (Exception e) {
+      Log.e("UniversalAudioModule", "Exception", e);
+      this._setError(e.getMessage());
+      this.emitEvent("error");
+      return;
+    }
   }
 
   // public void release(final Integer key) {
