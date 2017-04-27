@@ -1,9 +1,12 @@
 package io.fata.universal.audio;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
+import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
@@ -30,6 +33,7 @@ public class UniversalAudioPlayer {
   protected MediaPlayer player = null;
   protected ReactContext context;
   protected WritableMap data = Arguments.createMap();
+  protected Timer timer;
 
   protected void emitEvent(String type) {
     WritableMap data = Arguments.createMap();
@@ -104,17 +108,39 @@ public class UniversalAudioPlayer {
     if(player == null) return;
     // TODO
   }
-  public void play() {
+  protected void play(int pos) {
     if(player == null) return;
     if(player.isPlaying()) return;
-    int pos = player.getCurrentPosition();
     player.seekTo(pos);
     player.start();
+    this.emitEvent("play");
+    this.emitEvent("playing");
+
+    final UniversalAudioPlayer self = this;
+
+    timer = new Timer();
+    timer.scheduleAtFixedRate(new TimerTask() {
+      @Override
+      public void run() {
+        if(player.isPlaying()) {
+          self.setData("currentTime", player.getCurrentPosition());
+          self.emitEvent("timeupdate");
+        } else {
+          timer.cancel();
+          timer.purge();
+        }
+      }
+    }, 0, 1000);
+  }
+  public void play() {
+    int pos = player.getCurrentPosition();
+    play(pos);
   }
   public void pause() {
     if(player == null) return;
     player.pause();
     this.setData("paused", true);
+    this.emitEvent("pause");
   }
   public void setAudioTracks(String v) {
     this.setData("audioTracks", v);
@@ -223,34 +249,38 @@ public class UniversalAudioPlayer {
     }
   }
   public void setSource(String source) {
-    int res = this.context.getResources().getIdentifier(source, "raw", this.context.getPackageName());
-    if(res != 0) {
-      player = MediaPlayer.create(this.context, res);
-    }
+
+    player = new MediaPlayer();
 
     // TODO: data-uri
-    
-    // remote
-    if(source.startsWith("http://") || source.startsWith("https://")) {
-      player = new MediaPlayer();
-      player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-      try {
-        player.setDataSource(source);
-      } catch(IOException e) {
-        Log.e("UniversalAudioModule", "Exception", e);
-      }
-    }
-    // file
-    else {
-      File file = new File(source);
-      if(file.exists()) {
-        Uri uri = Uri.fromFile(file);
-        player = MediaPlayer.create(this.context, uri);
-      }
-    }
+    int resid = context.getResources().getIdentifier(source, "raw", this.context.getPackageName());
 
     try {
-      player.prepare();
+
+      // resource
+      if(resid != 0) {
+        AssetFileDescriptor afd = context.getResources().openRawResourceFd(resid);
+        player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+        afd.close();
+      }
+      // remote
+      else if(source.startsWith("http://") || source.startsWith("https://")) {
+        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        player.setDataSource(source);
+      }
+      // file
+      else {
+        AssetFileDescriptor afd = context.getAssets().openFd(source);
+        player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+        afd.close();
+      }
+
+      this.emitEvent("loadstart");
+      player.prepareAsync();
+
+      this._setDuration(player.getDuration());
+      this.emitEvent("durationchange");
+
     } catch (Exception e) {
       Log.e("UniversalAudioModule", "Exception", e);
     }
@@ -261,11 +291,16 @@ public class UniversalAudioPlayer {
     player.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
       @Override
       public synchronized void onBufferingUpdate(MediaPlayer mp, int percent) {
+        self.emitEvent("progress");
       }
     });
     player.setOnCompletionListener(new OnCompletionListener() {
       @Override
       public synchronized void onCompletion(MediaPlayer mp) {
+        self.emitEvent("ended");
+        if(self.getBoolean("loop")) {
+          self.play(0);
+        }
       }
     });
     player.setOnErrorListener(new OnErrorListener() {
@@ -274,15 +309,19 @@ public class UniversalAudioPlayer {
         switch(extra) {
           case MediaPlayer.MEDIA_ERROR_IO:
             self._setError("MEDIA_ERROR_IO");
+            self.emitEvent("error");
             break;
           case MediaPlayer.MEDIA_ERROR_MALFORMED:
             self._setError("MEDIA_ERROR_MALFORMED");
+            self.emitEvent("error");
             break;
           case MediaPlayer.MEDIA_ERROR_UNSUPPORTED:
             self._setError("MEDIA_ERROR_UNSUPPORTED");
+            self.emitEvent("error");
             break;
           case MediaPlayer.MEDIA_ERROR_TIMED_OUT:
             self._setError("MEDIA_ERROR_TIMED_OUT");
+            self.emitEvent("error");
             break;
         }
         return true;
@@ -310,6 +349,7 @@ public class UniversalAudioPlayer {
             self._setSeekable(false);
             break;
           case MediaPlayer.MEDIA_INFO_METADATA_UPDATE:
+            self.emitEvent("loadedmetadata");
             break;
           case MediaPlayer.MEDIA_INFO_UNSUPPORTED_SUBTITLE:
             break;
@@ -321,6 +361,11 @@ public class UniversalAudioPlayer {
     player.setOnPreparedListener(new OnPreparedListener() {
       @Override
       public synchronized void onPrepared(MediaPlayer mp) {
+        self.emitEvent("loadeddata");
+        self.emitEvent("canplay");
+        if(self.getBoolean("autoPlay")) {
+          self.play();
+        }
       }
     });
     player.setOnSeekCompleteListener(new OnSeekCompleteListener() {
@@ -347,11 +392,11 @@ public class UniversalAudioPlayer {
   // }
 
 }
-// abort	Fires when the loading of an audio/video is aborted
+// TODO: abort	Fires when the loading of an audio/video is aborted
 // canplay	Fires when the browser can start playing the audio/video
-// canplaythrough	Fires when the browser can play through the audio/video without stopping for buffering
+// TODO: canplaythrough	Fires when the browser can play through the audio/video without stopping for buffering
 // durationchange	Fires when the duration of the audio/video is changed
-// emptied	Fires when the current playlist is empty
+// TODO: emptied	Fires when the current playlist is empty
 // ended	Fires when the current playlist is ended
 // error	Fires when an error occurred during the loading of an audio/video
 // loadeddata	Fires when the browser has loaded the current frame of the audio/video
@@ -361,11 +406,11 @@ public class UniversalAudioPlayer {
 // play	Fires when the audio/video has been started or is no longer paused
 // playing	Fires when the audio/video is playing after having been paused or stopped for buffering
 // progress	Fires when the browser is downloading the audio/video
-// ratechange	Fires when the playing speed of the audio/video is changed
-  // seeked	Fires when the user is finished moving/skipping to a new position in the audio/video
-  // seeking	Fires when the user starts moving/skipping to a new position in the audio/video
-// stalled	Fires when the browser is trying to get media data, but data is not available
-// suspend	Fires when the browser is intentionally not getting media data
+// TODO: ratechange	Fires when the playing speed of the audio/video is changed
+// seeked	Fires when the user is finished moving/skipping to a new position in the audio/video
+// seeking	Fires when the user starts moving/skipping to a new position in the audio/video
+// TODO: stalled	Fires when the browser is trying to get media data, but data is not available
+// TODO: suspend	Fires when the browser is intentionally not getting media data
 // timeupdate	Fires when the current playback position has changed
-  // volumechange	Fires when the volume has been changed
-// waiting	Fires when the video stops because it needs to buffer the next frame
+// volumechange	Fires when the volume has been changed
+// TODO: waiting	Fires when the video stops because it needs to buffer the next frame
