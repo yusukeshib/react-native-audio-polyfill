@@ -1,0 +1,8 @@
+node_modules/
+.DS_Store
+*.log
+/android/build/
+*.xcuserdatad/
+Pods/
+ios/build
+__snapshots__

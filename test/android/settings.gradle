@@ -1,0 +1,5 @@
+rootProject.name = 'test'
+include ':react-universal-audio'
+project(':react-universal-audio').projectDir = new File(rootProject.projectDir, '../../android')
+
+include ':app'
