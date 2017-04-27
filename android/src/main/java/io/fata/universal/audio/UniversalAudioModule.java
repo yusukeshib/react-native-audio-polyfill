@@ -96,12 +96,12 @@ public class UniversalAudioModule extends ReactContextBaseJavaModule {
     player.setControls(v);
   }
 
-  @ReactMethod
-  public void setCrossOrigin(int audioId, String v) {
-    UniversalAudioPlayer player = getPlayer(audioId);
-    if(player == null) return;
-    player.setCrossOrigin(v);
-  }
+  // @ReactMethod
+  // public void setCrossOrigin(int audioId, String v) {
+  //   UniversalAudioPlayer player = getPlayer(audioId);
+  //   if(player == null) return;
+  //   player.setCrossOrigin(v);
+  // }
 
   @ReactMethod
   public void setCurrentTime(int audioId, float v) {
@@ -162,7 +162,7 @@ public class UniversalAudioModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setPreload(int audioId, Boolean v) {
+  public void setPreload(int audioId, String v) {
     UniversalAudioPlayer player = getPlayer(audioId);
     if(player == null) return;
     player.setPreload(v);
