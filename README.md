@@ -77,8 +77,7 @@ or:
 			 new MainReactPackage(),
 			 new UniversalAudioPackage() // <---- and This!
 		 );
-}
-```
+   ```
 
 ## License
 
