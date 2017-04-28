@@ -236,6 +236,7 @@ public class UniversalAudioPlayer {
     if(player == null) return;
     params.setSpeed((float)v);
     player.setPlaybackParams(params);
+    this.emitEvent("ratechange");
   }
   protected void _setPlayed(Boolean v) {
     this.setData("played", v);
@@ -424,7 +425,7 @@ public class UniversalAudioPlayer {
 // play	Fires when the audio/video has been started or is no longer paused
 // playing	Fires when the audio/video is playing after having been paused or stopped for buffering
 // progress	Fires when the browser is downloading the audio/video
-// TODO: ratechange	Fires when the playing speed of the audio/video is changed
+// ratechange	Fires when the playing speed of the audio/video is changed
 // seeked	Fires when the user is finished moving/skipping to a new position in the audio/video
 // seeking	Fires when the user starts moving/skipping to a new position in the audio/video
 // TODO: stalled	Fires when the browser is trying to get media data, but data is not available

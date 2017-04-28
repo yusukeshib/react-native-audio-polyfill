@@ -1,4 +1,5 @@
 #import "UniversalAudioPlayer.h"
+#import <React/RCTConvert.h>
 
 static int __id__ = 1;
 
@@ -228,6 +229,7 @@ static int __id__ = 1;
   [self setDouble:v forKey:@"playbackRate"];
   if(player == nil) return;
   player.rate = v;
+  [self emitEvent:@"ratechange"];
 }
      
 - (void)_setPlayed:(BOOL)v {
@@ -277,7 +279,6 @@ static int __id__ = 1;
     url = [NSURL fileURLWithPath:[source stringByRemovingPercentEncoding]];
   }
 
-  // 
   player = [[AVAudioPlayer alloc] initWithData:[[NSData alloc] initWithContentsOfURL:url] error:&error];
   player.delegate = self;
   player.enableRate = YES;

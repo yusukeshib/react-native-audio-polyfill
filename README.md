@@ -47,7 +47,7 @@ sound.play()
 * [ ] controller
 * [ ] controls
 * [ ] crossOrigin
-* [x] currentSrc
+* [ ] currentSrc
 * [x] currentTime
 * [ ] defaultMuted
 * [ ] defaultPlaybackRate
@@ -87,13 +87,13 @@ sound.play()
 * [x] play
 * [x] playing
 * [x] progress // only android
-* [ ] ratechange
+* [x] ratechange
 * [x] seeked
 * [x] seeking
 * [ ] stalled
 * [ ] suspend
 * [x] timeupdate // only android
-* [ ] volumechange
+* [x] volumechange
 * [ ] waiting
 
 ## TODO
