@@ -92,7 +92,7 @@ sound.play()
 * [x] seeking
 * [ ] stalled
 * [ ] suspend
-* [x] timeupdate // only android
+* [x] timeupdate
 * [x] volumechange
 * [ ] waiting
 

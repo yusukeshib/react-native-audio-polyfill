@@ -1,5 +1,6 @@
 #import "UniversalAudioPlayer.h"
 #import <React/RCTConvert.h>
+#import <React/RCTLog.h>
 
 static int __id__ = 1;
 
@@ -7,6 +8,7 @@ static int __id__ = 1;
   AVAudioPlayer *player;
   NSMutableDictionary *data;
   UniversalAudio *module;
+  NSTimer *timer;
 }
 
 - (id)initWithModule:(UniversalAudio *)_module {
@@ -98,22 +100,23 @@ static int __id__ = 1;
   [player play];
   [self emitEvent:@"play"];
   [self emitEvent:@"playing"];
-  
-//  final UniversalAudioPlayer self = this;
-//  
-//  timer = new Timer();
-//  timer.scheduleAtFixedRate(new TimerTask() {
-//    @Override
-//    - (void)run() {
-//      if(player.isPlaying()) {
-//        self.setData("currentTime", player.getCurrentPosition() / 1000.0);
-//        self.emitEvent("timeupdate");
-//      } else {
-//        timer.cancel();
-//        timer.purge();
-//      }
-//    }
-//  }, 0, 1000);
+  timer = [NSTimer
+    timerWithTimeInterval:1.0
+                   target:self
+                 selector:@selector(onTimeUpdate:)
+                 userInfo:nil
+                  repeats:YES];
+  [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
+}
+
+- (void)onTimeUpdate:(id)sender {
+  RCTLogInfo(@"onTimeUpdate:%d", [player isPlaying]);
+  if([player isPlaying]) {
+    [self setDouble:player.currentTime forKey:@"currentTime"];
+    [self emitEvent:@"timeupdate"];
+  } else {
+    [timer invalidate];
+  }
 }
 
 - (void)play {
@@ -167,7 +170,7 @@ static int __id__ = 1;
   if(player == nil) return;
   [self _setSeeking:YES];
   [self emitEvent:@"seeking"];
-  player.currentTime = v * 1000.0f;
+  player.currentTime = v;
   [self _setSeeking:NO];
   [self emitEvent:@"seeked"];
 }
@@ -288,9 +291,9 @@ static int __id__ = 1;
 
   [player prepareToPlay];
   [self _setDuration:player.duration];
-	[self emitEvent:@"loadedmetadata"];
-	[self emitEvent:@"loadeddata"];
-	[self emitEvent:@"canplay"];
+  [self emitEvent:@"loadedmetadata"];
+  [self emitEvent:@"loadeddata"];
+  [self emitEvent:@"canplay"];
   
   if([self getBoolForKey:@"autoplay"] == YES) {
     [self play];
