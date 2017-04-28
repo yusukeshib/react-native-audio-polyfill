@@ -1,11 +1,19 @@
 package io.fata.universal.audio;
 
+import java.math.BigInteger;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import android.util.Base64;
+import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -36,13 +44,13 @@ public class UniversalAudioPlayer {
   protected int id;
   protected MediaPlayer player = null;
   protected ReactContext context;
-  protected HashMap<String, Object> data = new HashMap<>();
+  protected WritableMap data = Arguments.createMap();
   protected Timer timer;
   protected PlaybackParams params;
 
   protected void emitEvent(String type) {
     WritableMap map = Arguments.createMap();
-    // map.merge(this.data);
+    map.merge(this.data);
     map.putInt("audioId", this.id);
     map.putString("type", type);
 
@@ -82,28 +90,25 @@ public class UniversalAudioPlayer {
     this.setVolume(1.0);
   }
   protected void setData(String key, Double value) {
-    this.data.put(key, value);
+    this.data.putDouble(key, value);
   }
   protected void setData(String key, String value) {
-    this.data.put(key, value);
+    this.data.putString(key, value);
   }
   protected void setData(String key, Boolean value) {
-    this.data.put(key, value);
+    this.data.putBoolean(key, value);
   }
   protected double getDouble(String key) {
-    Object value = this.data.get(key);
-    if(value == null) return 0.0;
-    return (double)value;
+    if(this.data.hasKey(key) == false) return 0.0;
+    return this.data.getDouble(key);
   }
   protected String getString(String key) {
-    Object value = this.data.get(key);
-    if(value == null) return "";
-    return (String)value;
+    if(this.data.hasKey(key) == false) return "";
+    return this.data.getString(key);
   }
   protected Boolean getBoolean(String key) {
-    Object value = this.data.get(key);
-    if(value == null) return false;
-    return (Boolean)value;
+    if(this.data.hasKey(key) == false) return false;
+    return this.data.getBoolean(key);
   }
   public int getId() {
     return this.id;
@@ -119,7 +124,7 @@ public class UniversalAudioPlayer {
     // TODO
   }
   protected void play(double pos) {
-    player.seekTo((int)(pos * 1000.0));
+    if(this.getBoolean("seekable")) player.seekTo((int)(pos * 1000.0));
     player.start();
     this.emitEvent("play");
     this.emitEvent("playing");
@@ -179,6 +184,7 @@ public class UniversalAudioPlayer {
   public void setCurrentTime(double v) {
     this.setData("currentTime", v);
     if(player == null) return;
+    if(this.getBoolean("seekable") == false)  return;
     player.seekTo((int)(v * 1000.0f));
     this._setSeeking(true);
     this.emitEvent("seeking");
@@ -236,6 +242,7 @@ public class UniversalAudioPlayer {
     if(player == null) return;
     params.setSpeed((float)v);
     player.setPlaybackParams(params);
+    this.emitEvent("ratechange");
   }
   protected void _setPlayed(Boolean v) {
     this.setData("played", v);
@@ -262,9 +269,69 @@ public class UniversalAudioPlayer {
       this.emitEvent("volumechange");
     }
   }
-  public void setSource(String source) {
+  protected static String getMD5EncryptedString(String encTarget) {
+    MessageDigest mdEnc = null;
+    try {
+      mdEnc = MessageDigest.getInstance("MD5");
+    } catch (NoSuchAlgorithmException e) {
+      e.printStackTrace();
+    } // Encryption algorithm
+    mdEnc.update(encTarget.getBytes(), 0, encTarget.length());
+    String md5 = new BigInteger(1, mdEnc.digest()).toString(16);
+    while(md5.length() < 32) {
+      md5 = "0"+md5;
+    }
+    return md5;
+  }
+  protected void setDataSource(String source) throws IOException {
 
-    Log.v(TAG, "source:" + source);
+    int resid = context.getResources().getIdentifier(source, "raw", this.context.getPackageName());
+
+    // resource
+    if(resid != 0) {
+      AssetFileDescriptor afd = context.getResources().openRawResourceFd(resid);
+      player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+      afd.close();
+    }
+    // remote
+    else if(source.startsWith("http://") || source.startsWith("https://")) {
+      player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+      player.setDataSource(source);
+    }
+    // data-uri
+    else if(source.startsWith("data:")) {
+      final String PREFIX = "data:audio/";
+      // get hash of data
+      String md5Hash = getMD5EncryptedString(source);
+      String extension = source.substring(PREFIX.length(), source.indexOf(';'));
+      String fileName = md5Hash + "." + extension;
+
+      FileInputStream input;
+      Context appContext = context.getApplicationContext();
+      try {
+        input = appContext.openFileInput(fileName);
+      } catch(FileNotFoundException e) {
+        // create cache
+        String encodingPrefix = "base64,";
+        int contentStartIndex = source.indexOf(encodingPrefix) + encodingPrefix.length();
+        String base64String = source.substring(contentStartIndex);
+        byte[] decodedBytes = Base64.decode(base64String, Base64.NO_WRAP);
+        FileOutputStream outputStream = appContext.openFileOutput(md5Hash+"."+extension, Context.MODE_PRIVATE);
+        outputStream.write(decodedBytes);
+        outputStream.close();
+        input = appContext.openFileInput(fileName);
+      }
+      player.setDataSource(input.getFD());
+      input.close();
+    }
+    // file
+    else {
+      AssetFileDescriptor afd = context.getAssets().openFd(source);
+      player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+      afd.close();
+    }
+  }
+  public void setSource(String source) {
 
     player = new MediaPlayer();
 
@@ -274,7 +341,6 @@ public class UniversalAudioPlayer {
     player.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
       @Override
       public synchronized void onBufferingUpdate(MediaPlayer mp, int percent) {
-        self._setDuration((double)player.getDuration() / 1000.0);
         self.emitEvent("progress");
       }
     });
@@ -345,7 +411,12 @@ public class UniversalAudioPlayer {
     player.setOnPreparedListener(new OnPreparedListener() {
       @Override
       public synchronized void onPrepared(MediaPlayer mp) {
-        self._setDuration((double)player.getDuration() / 1000.0);
+        int duration = player.getDuration();
+        if(duration == -1) {
+          self._setSeekable(false);
+        } else {
+          self._setDuration((double)duration / 1000.0);
+        }
         self.emitEvent("loadeddata");
         self.emitEvent("canplay");
         if(self.getBoolean("autoplay")) {
@@ -371,32 +442,10 @@ public class UniversalAudioPlayer {
       }
     });
 
-    // TODO: data-uri
-    int resid = context.getResources().getIdentifier(source, "raw", this.context.getPackageName());
-
     try {
-
-      // resource
-      if(resid != 0) {
-        AssetFileDescriptor afd = context.getResources().openRawResourceFd(resid);
-        player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-        afd.close();
-      }
-      // remote
-      else if(source.startsWith("http://") || source.startsWith("https://")) {
-        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        player.setDataSource(source);
-      }
-      // file
-      else {
-        AssetFileDescriptor afd = context.getAssets().openFd(source);
-        player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-        afd.close();
-      }
-
+      setDataSource(source);
       this.emitEvent("loadstart");
       player.prepareAsync();
-
     } catch (Exception e) {
       Log.e("UniversalAudioModule", "Exception", e);
       this._setError(e.getMessage());
@@ -424,7 +473,7 @@ public class UniversalAudioPlayer {
 // play	Fires when the audio/video has been started or is no longer paused
 // playing	Fires when the audio/video is playing after having been paused or stopped for buffering
 // progress	Fires when the browser is downloading the audio/video
-// TODO: ratechange	Fires when the playing speed of the audio/video is changed
+// ratechange	Fires when the playing speed of the audio/video is changed
 // seeked	Fires when the user is finished moving/skipping to a new position in the audio/video
 // seeking	Fires when the user starts moving/skipping to a new position in the audio/video
 // TODO: stalled	Fires when the browser is trying to get media data, but data is not available

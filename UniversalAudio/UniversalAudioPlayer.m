@@ -1,4 +1,5 @@
 #import "UniversalAudioPlayer.h"
+#import <React/RCTConvert.h>
 
 static int __id__ = 1;
 
@@ -12,6 +13,7 @@ static int __id__ = 1;
   if(self = [super init]) {
     self.id = [NSNumber numberWithInt:__id__++];
     module = _module;
+    data = [[NSMutableDictionary alloc] init];
 
     // default settings
     [self setAudioTracks:@""];
@@ -46,7 +48,7 @@ static int __id__ = 1;
 }
 
 - (void)emitEvent:(NSString *)type {
-  [module sendEvent:type audioId:self.id];
+  [module sendEvent:type audioId:self.id data:data];
 }
 
 - (void)setDouble:(double)value forKey:(NSString *)key {
@@ -228,6 +230,7 @@ static int __id__ = 1;
   [self setDouble:v forKey:@"playbackRate"];
   if(player == nil) return;
   player.rate = v;
+  [self emitEvent:@"ratechange"];
 }
      
 - (void)_setPlayed:(BOOL)v {
@@ -269,7 +272,9 @@ static int __id__ = 1;
   NSURL* url;
 
   // remote
-  if([source hasPrefix:@"http"]) {
+  // base64
+
+  if([source hasPrefix:@"http"] || [source hasPrefix:@"data:"]) {
     url = [NSURL URLWithString:[source stringByRemovingPercentEncoding]];
   }
   // local
@@ -277,7 +282,6 @@ static int __id__ = 1;
     url = [NSURL fileURLWithPath:[source stringByRemovingPercentEncoding]];
   }
 
-  // 
   player = [[AVAudioPlayer alloc] initWithData:[[NSData alloc] initWithContentsOfURL:url] error:&error];
   player.delegate = self;
   player.enableRate = YES;

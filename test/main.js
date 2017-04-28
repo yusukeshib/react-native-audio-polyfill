@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Text from './components/text'
+import Button from './button'
 import tests from './modules'
 
 export default class Main extends Component {
@@ -14,10 +14,15 @@ export default class Main extends Component {
     if(fn) await fn()
   }
   next() {
+    if(this._test && this._test.unload) this._test.unload()
+
     this._index = (this._index + 1) % tests.length
+
     const test =  tests[this._index]
+
     this.setState({ name: test.description })
     this.update(test.default)
+    this._test = test
   }
   componentDidMount() {
     this.next()
@@ -28,7 +33,7 @@ export default class Main extends Component {
   render() {
     const { name } = this.state
     return (
-      <Text>{name}</Text>
+      <Button title={name} onPress={this.next} />
     )
   }
 }

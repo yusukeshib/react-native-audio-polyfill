@@ -47,7 +47,7 @@ sound.play()
 * [ ] controller
 * [ ] controls
 * [ ] crossOrigin
-* [x] currentSrc
+* [ ] currentSrc
 * [x] currentTime
 * [ ] defaultMuted
 * [ ] defaultPlaybackRate
@@ -87,21 +87,19 @@ sound.play()
 * [x] play
 * [x] playing
 * [x] progress // only android
-* [ ] ratechange
+* [x] ratechange
 * [x] seeked
 * [x] seeking
 * [ ] stalled
 * [ ] suspend
 * [x] timeupdate // only android
-* [ ] volumechange
+* [x] volumechange
 * [ ] waiting
 
 ## TODO
 
-* property accessor
 * canPlayType support.
-* base64 data-uri support.
-* Create audio compoent with  `controls=true`.
+* Create audio component with  `controls=true`.
 * Buffering progress for ios.
 
 ## License
