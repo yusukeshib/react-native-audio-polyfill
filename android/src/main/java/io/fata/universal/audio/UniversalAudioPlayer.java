@@ -217,7 +217,7 @@ public class UniversalAudioPlayer {
     if(v) {
       player.setVolume(0, 0);
     } else {
-      double volume = this.getDouble("volume");
+      float volume = (float)this.getDouble("volume");
       player.setVolume(volume, volume);
     }
   }
@@ -234,7 +234,7 @@ public class UniversalAudioPlayer {
   public void setPlaybackRate(double v) {
     this.setData("playbackRate", v);
     if(player == null) return;
-    params.setSpeed(v);
+    params.setSpeed((float)v);
     player.setPlaybackParams(params);
   }
   protected void _setPlayed(Boolean v) {
