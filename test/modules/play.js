@@ -3,7 +3,7 @@ import Audio from '../..'
 export const description = 'play'
 
 export default function() {
-  const test = new Audio('http://techslides.com/demos/samples/sample.mp3')
+  const test = new Audio('https://ia802508.us.archive.org/5/items/testmp3testfile/mpthreetest.mp3')
   test.autoPlay = true
   console.log(test)
   test.addEventListener('canplay', evt => {

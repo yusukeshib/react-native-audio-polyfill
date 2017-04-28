@@ -16,7 +16,7 @@
   if(audioMap == nil) {
     audioMap = [[NSMutableDictionary alloc] init];
   }
-  NSString *key = [[NSNumber numberWithInt:(int)player.id] stringValue];
+  NSString *key = [player.id stringValue];
   [audioMap setValue:player forKey: key];
 }
 
@@ -39,7 +39,7 @@ RCT_REMAP_METHOD(create,
   UniversalAudioPlayer *player = [[UniversalAudioPlayer alloc] initWithModule:self];
   [self setPlayer:player];
   NSMutableDictionary *map = [[NSMutableDictionary alloc] init];
-  [map setValue:[NSNumber numberWithInt:(int)player.id] forKey:@"audioId"];
+  [map setValue:player.id forKey:@"audioId"];
   resolve(map);
 }
 

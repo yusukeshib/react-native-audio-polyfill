@@ -31,7 +31,7 @@ public class UniversalAudioPlayer {
 
   protected final String TAG = "ReactNative";
 
-  protected static int __id__ = 0;
+  protected static int __id__ = 1;
 
   protected int id;
   protected MediaPlayer player = null;
@@ -77,7 +77,7 @@ public class UniversalAudioPlayer {
     this.setPreload("auto");
     this._setSeekable(true);
     this._setSeeking(false);
-    this.setSource("");
+    // this.setSource("");
     this.setTextTracks("");
     this.setVolume(1.0);
   }

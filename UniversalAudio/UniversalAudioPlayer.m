@@ -1,6 +1,6 @@
 #import "UniversalAudioPlayer.h"
 
-static int __id__ = 0;
+static int __id__ = 1;
 
 @implementation UniversalAudioPlayer {
   AVAudioPlayer *player;
@@ -37,7 +37,7 @@ static int __id__ = 0;
     [self setPreload:@"auto"];
     [self _setSeekable:YES];
     [self _setSeeking:NO];
-    [self setSource:@""];
+    // [self setSource:@""];
     [self setTextTracks:@""];
     [self setVolume:1.0];
 
