@@ -1,6 +1,6 @@
 {
   "name": "react-universal-audio",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Audio polyfill for desktop and native",
   "main": "index.js",
   "scripts": {
