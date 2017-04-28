@@ -5,18 +5,13 @@ static int __id__ = 0;
 @implementation UniversalAudioPlayer {
   AVAudioPlayer *player;
   NSMutableDictionary *data;
+  UniversalAudio *module;
 }
 
-RCT_EXPORT_MODULE();
-
-- (NSArray<NSString *> *)supportedEvents
-{
-  return @[@"UniversalAudioEvent"];
-}
-
-- (id)init {
+- (id)initWithModule:(UniversalAudio *)_module {
   if(self = [super init]) {
     self.id = [NSNumber numberWithInt:__id__++];
+    module = _module;
 
     // default settings
     [self setAudioTracks:@""];
@@ -51,8 +46,7 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)emitEvent:(NSString *)type {
-  [self sendEventWithName:@"UniversalAudioEvent"
-                     body:@{@"audioId": self.id, @"type": type} ];
+  [module sendEvent:type audioId:self.id];
 }
 
 - (void)setDouble:(double)value forKey:(NSString *)key {
