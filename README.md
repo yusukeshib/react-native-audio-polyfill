@@ -34,7 +34,7 @@ sound.play()
 
 * [ ] audioTracks	
 * [x] autoplay	
-* [-] buffered // only android
+* [x] buffered // only android
 * [ ] controller
 * [ ] controls
 * [ ] crossOrigin
@@ -77,13 +77,13 @@ sound.play()
 * [x] pause	
 * [x] play
 * [x] playing
-* [-] progress // only android
+* [x] progress // only android
 * [ ] ratechange
 * [x] seeked
 * [x] seeking
 * [ ] stalled
 * [ ] suspend
-* [-] timeupdate // only android
+* [x] timeupdate // only android
 * [ ] volumechange
 * [ ] waiting
 
@@ -92,7 +92,7 @@ sound.play()
 * property accessor
 * canPlayType support.
 * base64 data-uri support.
-* Create audio compoent with  `controlls=true`.
+* Create audio compoent with  `controls=true`.
 * Buffering progress for ios.
 
 ## Install
