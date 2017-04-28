@@ -8,10 +8,8 @@ export const description = 'play with resource'
 export default function() {
   test = new Audio(mp3Test)
   test.autoPlay = true
-  console.log(test)
   test.addEventListener('canplay', evt => {
     test.play()
-    console.log('canplay')
   })
 }
 
