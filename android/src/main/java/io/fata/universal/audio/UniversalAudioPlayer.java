@@ -19,6 +19,7 @@ import android.media.MediaPlayer.OnTimedMetaDataAvailableListener;
 import android.media.MediaPlayer.OnTimedTextListener;
 import android.media.TimedMetaData;
 import android.media.TimedText;
+import android.media.PlaybackParams;
 import android.net.Uri;
 import android.media.AudioManager;
 import android.util.Log;
@@ -37,6 +38,7 @@ public class UniversalAudioPlayer {
   protected ReactContext context;
   protected HashMap<String, Object> data = new HashMap<>();
   protected Timer timer;
+  protected PlaybackParams params;
 
   protected void emitEvent(String type) {
     WritableMap map = Arguments.createMap();
@@ -156,7 +158,6 @@ public class UniversalAudioPlayer {
   public void setAutoplay(Boolean v) {
     this.setData("autoplay", v);
     if(player == null) return;
-    // TODO
   }
   protected void _setBuffered(Boolean v) {
     this.setData("buffered", v);
@@ -185,12 +186,10 @@ public class UniversalAudioPlayer {
   public void setDefaultMuted(Boolean v) {
     this.setData("defaultMuted", v);
     if(player == null) return;
-    // TODO
   }
   public void setDefaultPlaybackRate(double v) {
     this.setData("defaultPlaybackRate", v);
     if(player == null) return;
-    // TODO
   }
   protected void _setDuration(double v) {
     double current = this.getDouble("duration");
@@ -208,18 +207,19 @@ public class UniversalAudioPlayer {
   }
   public void setLoop(Boolean v) {
     this.setData("loop", v);
-    if(player == null) return;
-    // TODO
   }
   public void setMediaGroup(String v) {
     this.setData("mediaGroup", v);
-    if(player == null) return;
-    // TODO
   }
   public void setMuted(Boolean v) {
     this.setData("muted", v);
     if(player == null) return;
-    player.setVolume(0, 0);
+    if(v) {
+      player.setVolume(0, 0);
+    } else {
+      double volume = this.getDouble("volume");
+      player.setVolume(volume, volume);
+    }
   }
   protected void _setNetworkState(String v) {
     this.setData("networkState", v);
@@ -234,7 +234,8 @@ public class UniversalAudioPlayer {
   public void setPlaybackRate(double v) {
     this.setData("playbackRate", v);
     if(player == null) return;
-    // TODO
+    params.setSpeed(v);
+    player.setPlaybackParams(params);
   }
   protected void _setPlayed(Boolean v) {
     this.setData("played", v);

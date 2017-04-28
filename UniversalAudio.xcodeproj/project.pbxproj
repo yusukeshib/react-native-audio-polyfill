@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		749BF6FB1EB1AACA00160E2D /* UniversalAudio.m in Sources */ = {isa = PBXBuildFile; fileRef = 749BF6FA1EB1AA9100160E2D /* UniversalAudio.m */; };
+		74DED8DA1EB2D83500DC9FAE /* UniversalAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 74DED8D91EB2D83500DC9FAE /* UniversalAudioPlayer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,6 +27,8 @@
 		19825A1E1BD4A89800EE0337 /* libUniversalAudio.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libUniversalAudio.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		749BF6F91EB1AA9100160E2D /* UniversalAudio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UniversalAudio.h; sourceTree = "<group>"; };
 		749BF6FA1EB1AA9100160E2D /* UniversalAudio.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UniversalAudio.m; sourceTree = "<group>"; };
+		74DED8D81EB2D83500DC9FAE /* UniversalAudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UniversalAudioPlayer.h; sourceTree = "<group>"; };
+		74DED8D91EB2D83500DC9FAE /* UniversalAudioPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UniversalAudioPlayer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +63,8 @@
 		749BF6F81EB1AA9100160E2D /* UniversalAudio */ = {
 			isa = PBXGroup;
 			children = (
+				74DED8D81EB2D83500DC9FAE /* UniversalAudioPlayer.h */,
+				74DED8D91EB2D83500DC9FAE /* UniversalAudioPlayer.m */,
 				749BF6F91EB1AA9100160E2D /* UniversalAudio.h */,
 				749BF6FA1EB1AA9100160E2D /* UniversalAudio.m */,
 			);
@@ -124,6 +129,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				749BF6FB1EB1AACA00160E2D /* UniversalAudio.m in Sources */,
+				74DED8DA1EB2D83500DC9FAE /* UniversalAudioPlayer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
