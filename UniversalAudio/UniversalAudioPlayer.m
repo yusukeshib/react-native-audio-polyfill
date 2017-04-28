@@ -123,6 +123,15 @@ static int __id__ = 1;
   if(player == nil) return;
   if([player isPlaying]) return;
   double pos = player.currentTime;
+
+  // volume
+  if([self getBoolForKey:@"defaultMuted"] == NO) {
+    player.volume = [self getDoubleForKey:@"volume"];
+  }
+
+  // playbacKRate
+  player.rate = [self getDoubleForKey:@"defaultPlaybackRate"];
+
   [self play:pos];
 }
 

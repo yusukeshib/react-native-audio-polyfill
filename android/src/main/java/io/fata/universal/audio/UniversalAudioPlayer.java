@@ -149,6 +149,19 @@ public class UniversalAudioPlayer {
     if(player == null) return;
     if(player.isPlaying()) return;
     double pos = player.getCurrentPosition() / 1000.0;
+
+    // volume
+    if(this.getBoolean("defaultMuted") == false) {
+      float volume = (float)this.getDouble("volume");
+      player.setVolume(volume, volume);
+    }
+
+    // playbackRate
+    params.setSpeed((float)this.getDouble("defaultPlaybackRate"));
+    player.setPlaybackParams(params);
+
+    this.emitEvent("ratechange");
+    
     play(pos);
   }
   public void pause() {
@@ -234,7 +247,8 @@ public class UniversalAudioPlayer {
     if(v) {
       this.pause();
     } else {
-      this.play();
+      double pos = player.getCurrentPosition() / 1000.0;
+      this.play(pos);
     }
   }
   public void setPlaybackRate(double v) {
@@ -349,7 +363,7 @@ public class UniversalAudioPlayer {
       public synchronized void onCompletion(MediaPlayer mp) {
         self.emitEvent("ended");
         if(self.getBoolean("loop")) {
-          self.play(0);
+          self.play();
         }
       }
     });
