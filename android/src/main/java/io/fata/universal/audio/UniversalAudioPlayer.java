@@ -46,7 +46,6 @@ public class UniversalAudioPlayer {
 
     RCTDeviceEventEmitter emitter = context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
     emitter.emit("UniversalAudioEvent", map);
-
   }
   public UniversalAudioPlayer(ReactContext context) {
     this.context = context;
