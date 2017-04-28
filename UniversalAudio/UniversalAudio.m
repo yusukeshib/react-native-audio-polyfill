@@ -7,9 +7,13 @@
   NSMutableDictionary* audioMap;
 }
 
-- (void)sendEvent:(NSString *)type audioId:(NSNumber *)audioId {
-  [self sendEventWithName:@"UniversalAudioEvent"
-                       body:@{@"audioId": audioId, @"type": type} ];
+- (void)sendEvent:(NSString *)type
+          audioId:(NSNumber *)audioId
+             data:(NSDictionary *)data {
+  NSMutableDictionary *map = [NSMutableDictionary dictionaryWithDictionary: data];
+  [map setValue:audioId forKey:@"audioId"];
+  [map setValue:type forKey:@"type"];
+  [self sendEventWithName:@"UniversalAudioEvent" body:map];
 }
 
 - (void)setPlayer:(UniversalAudioPlayer *)player {

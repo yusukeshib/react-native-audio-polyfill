@@ -13,6 +13,7 @@ static int __id__ = 1;
   if(self = [super init]) {
     self.id = [NSNumber numberWithInt:__id__++];
     module = _module;
+    data = [[NSMutableDictionary alloc] init];
 
     // default settings
     [self setAudioTracks:@""];
@@ -47,7 +48,7 @@ static int __id__ = 1;
 }
 
 - (void)emitEvent:(NSString *)type {
-  [module sendEvent:type audioId:self.id];
+  [module sendEvent:type audioId:self.id data:data];
 }
 
 - (void)setDouble:(double)value forKey:(NSString *)key {
