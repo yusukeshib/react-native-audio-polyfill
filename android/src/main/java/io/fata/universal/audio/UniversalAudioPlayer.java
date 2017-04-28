@@ -1,11 +1,19 @@
 package io.fata.universal.audio;
 
+import java.math.BigInteger;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import android.util.Base64;
+import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -264,9 +272,69 @@ public class UniversalAudioPlayer {
       this.emitEvent("volumechange");
     }
   }
-  public void setSource(String source) {
+  protected static String getMD5EncryptedString(String encTarget) {
+    MessageDigest mdEnc = null;
+    try {
+      mdEnc = MessageDigest.getInstance("MD5");
+    } catch (NoSuchAlgorithmException e) {
+      e.printStackTrace();
+    } // Encryption algorithm
+    mdEnc.update(encTarget.getBytes(), 0, encTarget.length());
+    String md5 = new BigInteger(1, mdEnc.digest()).toString(16);
+    while(md5.length() < 32) {
+      md5 = "0"+md5;
+    }
+    return md5;
+  }
+  protected void setDataSource(String source) throws IOException {
 
-    Log.v(TAG, "source:" + source);
+    int resid = context.getResources().getIdentifier(source, "raw", this.context.getPackageName());
+
+    // resource
+    if(resid != 0) {
+      AssetFileDescriptor afd = context.getResources().openRawResourceFd(resid);
+      player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+      afd.close();
+    }
+    // remote
+    else if(source.startsWith("http://") || source.startsWith("https://")) {
+      player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+      player.setDataSource(source);
+    }
+    // data-uri
+    else if(source.startsWith("data:")) {
+      final String PREFIX = "data:audio/";
+      // get hash of data
+      String md5Hash = getMD5EncryptedString(source);
+      String extension = source.substring(PREFIX.length(), source.indexOf(';'));
+      String fileName = md5Hash + "." + extension;
+
+      FileInputStream input;
+      Context appContext = context.getApplicationContext();
+      try {
+        input = appContext.openFileInput(fileName);
+      } catch(FileNotFoundException e) {
+        // create cache
+        String encodingPrefix = "base64,";
+        int contentStartIndex = source.indexOf(encodingPrefix) + encodingPrefix.length();
+        String base64String = source.substring(contentStartIndex);
+        byte[] decodedBytes = Base64.decode(base64String, Base64.NO_WRAP);
+        FileOutputStream outputStream = appContext.openFileOutput(md5Hash+"."+extension, Context.MODE_PRIVATE);
+        outputStream.write(decodedBytes);
+        outputStream.close();
+        input = appContext.openFileInput(fileName);
+      }
+      player.setDataSource(input.getFD());
+      input.close();
+    }
+    // file
+    else {
+      AssetFileDescriptor afd = context.getAssets().openFd(source);
+      player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+      afd.close();
+    }
+  }
+  public void setSource(String source) {
 
     player = new MediaPlayer();
 
@@ -377,32 +445,10 @@ public class UniversalAudioPlayer {
       }
     });
 
-    // TODO: data-uri
-    int resid = context.getResources().getIdentifier(source, "raw", this.context.getPackageName());
-
     try {
-
-      // resource
-      if(resid != 0) {
-        AssetFileDescriptor afd = context.getResources().openRawResourceFd(resid);
-        player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-        afd.close();
-      }
-      // remote
-      else if(source.startsWith("http://") || source.startsWith("https://")) {
-        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        player.setDataSource(source);
-      }
-      // file
-      else {
-        AssetFileDescriptor afd = context.getAssets().openFd(source);
-        player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-        afd.close();
-      }
-
+      setDataSource(source);
       this.emitEvent("loadstart");
       player.prepareAsync();
-
     } catch (Exception e) {
       Log.e("UniversalAudioModule", "Exception", e);
       this._setError(e.getMessage());
