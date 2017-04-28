@@ -98,9 +98,8 @@ sound.play()
 
 ## TODO
 
-* property accessor
+* property accessor for ios.
 * canPlayType support.
-* base64 data-uri support.
 * Create audio component with  `controls=true`.
 * Buffering progress for ios.
 

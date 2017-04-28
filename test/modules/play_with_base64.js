@@ -13,6 +13,9 @@ export default function() {
     test.play()
     console.log('canplay')
   })
+  test.addEventListener('durationchange', evt => {
+    console.log('duration:', test.duration)
+  })
 }
 
 export const unload = function() {

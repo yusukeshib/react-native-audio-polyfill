@@ -44,13 +44,13 @@ public class UniversalAudioPlayer {
   protected int id;
   protected MediaPlayer player = null;
   protected ReactContext context;
-  protected HashMap<String, Object> data = new HashMap<>();
+  protected WritableMap data = Arguments.createMap();
   protected Timer timer;
   protected PlaybackParams params;
 
   protected void emitEvent(String type) {
     WritableMap map = Arguments.createMap();
-    // map.merge(this.data);
+    map.merge(this.data);
     map.putInt("audioId", this.id);
     map.putString("type", type);
 
@@ -90,28 +90,25 @@ public class UniversalAudioPlayer {
     this.setVolume(1.0);
   }
   protected void setData(String key, Double value) {
-    this.data.put(key, value);
+    this.data.putDouble(key, value);
   }
   protected void setData(String key, String value) {
-    this.data.put(key, value);
+    this.data.putString(key, value);
   }
   protected void setData(String key, Boolean value) {
-    this.data.put(key, value);
+    this.data.putBoolean(key, value);
   }
   protected double getDouble(String key) {
-    Object value = this.data.get(key);
-    if(value == null) return 0.0;
-    return (double)value;
+    if(this.data.hasKey(key) == false) return 0.0;
+    return this.data.getDouble(key);
   }
   protected String getString(String key) {
-    Object value = this.data.get(key);
-    if(value == null) return "";
-    return (String)value;
+    if(this.data.hasKey(key) == false) return "";
+    return this.data.getString(key);
   }
   protected Boolean getBoolean(String key) {
-    Object value = this.data.get(key);
-    if(value == null) return false;
-    return (Boolean)value;
+    if(this.data.hasKey(key) == false) return false;
+    return this.data.getBoolean(key);
   }
   public int getId() {
     return this.id;
