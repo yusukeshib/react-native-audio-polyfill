@@ -101,7 +101,7 @@ sound.play()
 * property accessor
 * canPlayType support.
 * base64 data-uri support.
-* Create audio compoent with  `controls=true`.
+* Create audio component with  `controls=true`.
 * Buffering progress for ios.
 
 ## License
