@@ -20,6 +20,15 @@ const sound = new Audio('./test.mp3')
 sound.play()
 ```
 
+## Install
+
+`npm install react-universal-audio`
+
+## Add it to your project
+
+`react-native link`
+
+
 ## Coverage
 
 ### functions
@@ -94,14 +103,6 @@ sound.play()
 * base64 data-uri support.
 * Create audio compoent with  `controls=true`.
 * Buffering progress for ios.
-
-## Install
-
-`npm install react-universal-audio`
-
-## Add it to your project
-
-`react-native link`
 
 ## License
 
