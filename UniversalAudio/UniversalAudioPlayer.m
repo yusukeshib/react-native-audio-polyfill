@@ -271,7 +271,9 @@ static int __id__ = 1;
   NSURL* url;
 
   // remote
-  if([source hasPrefix:@"http"]) {
+  // base64
+
+  if([source hasPrefix:@"http"] || [source hasPrefix:@"data:"]) {
     url = [NSURL URLWithString:[source stringByRemovingPercentEncoding]];
   }
   // local
