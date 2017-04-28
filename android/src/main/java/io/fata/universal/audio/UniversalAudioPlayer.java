@@ -119,7 +119,7 @@ public class UniversalAudioPlayer {
     // TODO
   }
   protected void play(double pos) {
-    player.seekTo((int)(pos * 1000.0));
+    if(this.getBoolean("seekable")) player.seekTo((int)(pos * 1000.0));
     player.start();
     this.emitEvent("play");
     this.emitEvent("playing");
@@ -179,6 +179,7 @@ public class UniversalAudioPlayer {
   public void setCurrentTime(double v) {
     this.setData("currentTime", v);
     if(player == null) return;
+    if(this.getBoolean("seekable") == false)  return;
     player.seekTo((int)(v * 1000.0f));
     this._setSeeking(true);
     this.emitEvent("seeking");
@@ -275,7 +276,6 @@ public class UniversalAudioPlayer {
     player.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
       @Override
       public synchronized void onBufferingUpdate(MediaPlayer mp, int percent) {
-        self._setDuration((double)player.getDuration() / 1000.0);
         self.emitEvent("progress");
       }
     });
@@ -346,7 +346,12 @@ public class UniversalAudioPlayer {
     player.setOnPreparedListener(new OnPreparedListener() {
       @Override
       public synchronized void onPrepared(MediaPlayer mp) {
-        self._setDuration((double)player.getDuration() / 1000.0);
+        int duration = player.getDuration();
+        if(duration == -1) {
+          self._setSeekable(false);
+        } else {
+          self._setDuration((double)duration / 1000.0);
+        }
         self.emitEvent("loadeddata");
         self.emitEvent("canplay");
         if(self.getBoolean("autoplay")) {
