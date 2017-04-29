@@ -49,8 +49,8 @@ sound.play()
 * [ ] crossOrigin
 * [ ] currentSrc
 * [x] currentTime
-* [ ] defaultMuted
-* [ ] defaultPlaybackRate
+* [x] defaultMuted
+* [x] defaultPlaybackRate
 * [x] duration
 * [x] ended	
 * [x] error
