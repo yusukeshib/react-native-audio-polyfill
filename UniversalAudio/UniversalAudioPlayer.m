@@ -110,7 +110,6 @@ static int __id__ = 1;
 }
 
 - (void)onTimeUpdate:(id)sender {
-  RCTLogInfo(@"onTimeUpdate:%d", [player isPlaying]);
   if([player isPlaying]) {
     [self setDouble:player.currentTime forKey:@"currentTime"];
     [self emitEvent:@"timeupdate"];
