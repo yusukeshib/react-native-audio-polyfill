@@ -46,7 +46,7 @@ public class UniversalAudioPlayer {
   protected ReactContext context;
   protected WritableMap data = Arguments.createMap();
   protected Timer timer;
-  protected PlaybackParams params;
+  protected PlaybackParams params = new PlaybackParams();
 
   protected void emitEvent(String type) {
     WritableMap map = Arguments.createMap();
@@ -120,8 +120,126 @@ public class UniversalAudioPlayer {
     return false;
   }
   public void load() {
-    if(player == null) return;
-    // TODO
+    String source = this.getString("source");
+    player = new MediaPlayer();
+
+    final UniversalAudioPlayer self = this;
+
+    // event
+    player.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
+      @Override
+      public synchronized void onBufferingUpdate(MediaPlayer mp, int percent) {
+        self.emitEvent("progress");
+      }
+    });
+    player.setOnCompletionListener(new OnCompletionListener() {
+      @Override
+      public synchronized void onCompletion(MediaPlayer mp) {
+        self.emitEvent("ended");
+        if(self.getBoolean("loop")) {
+          self.play();
+        }
+      }
+    });
+    player.setOnErrorListener(new OnErrorListener() {
+      @Override
+      public synchronized boolean onError(MediaPlayer mp, int what, int extra) {
+        switch(extra) {
+          case MediaPlayer.MEDIA_ERROR_IO:
+            self._setError("MEDIA_ERROR_IO");
+            self.emitEvent("error");
+            break;
+          case MediaPlayer.MEDIA_ERROR_MALFORMED:
+            self._setError("MEDIA_ERROR_MALFORMED");
+            self.emitEvent("error");
+            break;
+          case MediaPlayer.MEDIA_ERROR_UNSUPPORTED:
+            self._setError("MEDIA_ERROR_UNSUPPORTED");
+            self.emitEvent("error");
+            break;
+          case MediaPlayer.MEDIA_ERROR_TIMED_OUT:
+            self._setError("MEDIA_ERROR_TIMED_OUT");
+            self.emitEvent("error");
+            break;
+        }
+        return true;
+      }
+    });
+    player.setOnInfoListener(new OnInfoListener() {
+      @Override
+      public synchronized boolean onInfo(MediaPlayer mp, int what, int extra) {
+        switch(what) {
+          case MediaPlayer.MEDIA_INFO_UNKNOWN:
+            break;
+          case MediaPlayer.MEDIA_INFO_VIDEO_TRACK_LAGGING:
+            break;
+          case MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
+            break;
+          case MediaPlayer.MEDIA_INFO_BUFFERING_START:
+            self._setBuffered(false);
+            break;
+          case MediaPlayer.MEDIA_INFO_BUFFERING_END:
+            self._setBuffered(true);
+            break;
+          case MediaPlayer.MEDIA_INFO_BAD_INTERLEAVING:
+            break;
+          case MediaPlayer.MEDIA_INFO_NOT_SEEKABLE:
+            self._setSeekable(false);
+            break;
+          case MediaPlayer.MEDIA_INFO_METADATA_UPDATE:
+            self.emitEvent("loadedmetadata");
+            break;
+          case MediaPlayer.MEDIA_INFO_UNSUPPORTED_SUBTITLE:
+            break;
+          case MediaPlayer.MEDIA_INFO_SUBTITLE_TIMED_OUT:
+        }
+        return true;
+      }
+    });
+    player.setOnPreparedListener(new OnPreparedListener() {
+      @Override
+      public synchronized void onPrepared(MediaPlayer mp) {
+        int duration = player.getDuration();
+        if(duration == -1) {
+          self._setSeekable(false);
+        } else {
+          self._setDuration((double)duration / 1000.0);
+        }
+        self.emitEvent("loadeddata");
+        self.emitEvent("canplay");
+        if(self.getBoolean("autoplay")) {
+          self.play();
+        }
+      }
+    });
+    player.setOnSeekCompleteListener(new OnSeekCompleteListener() {
+      @Override
+      public synchronized void onSeekComplete(MediaPlayer mp) {
+        self._setSeeking(false);
+        self.emitEvent("seeked");
+      }
+    });
+    player.setOnTimedMetaDataAvailableListener(new OnTimedMetaDataAvailableListener() {
+      @Override
+      public synchronized void onTimedMetaDataAvailable(MediaPlayer mp, TimedMetaData data) {
+      }
+    });
+    player.setOnTimedTextListener(new OnTimedTextListener() {
+      @Override
+      public synchronized void onTimedText(MediaPlayer mp, TimedText text) {
+      }
+    });
+
+    try {
+      setDataSource(source);
+      this.emitEvent("loadstart");
+      player.prepareAsync();
+    } catch (Exception e) {
+      Log.e("UniversalAudioModule", "Exception", e);
+      this._setError(e.getMessage());
+      this.emitEvent("error");
+      return;
+    }
   }
   protected void play(double pos) {
     if(this.getBoolean("seekable")) player.seekTo((int)(pos * 1000.0));
@@ -244,6 +362,7 @@ public class UniversalAudioPlayer {
     this.setData("networkState", v);
   }
   public void setPaused(Boolean v) {
+    if(player == null) return;
     if(v) {
       this.pause();
     } else {
@@ -346,126 +465,8 @@ public class UniversalAudioPlayer {
     }
   }
   public void setSource(String source) {
+    this.setData("source", source);
 
-    player = new MediaPlayer();
-
-    final UniversalAudioPlayer self = this;
-
-    // event
-    player.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
-      @Override
-      public synchronized void onBufferingUpdate(MediaPlayer mp, int percent) {
-        self.emitEvent("progress");
-      }
-    });
-    player.setOnCompletionListener(new OnCompletionListener() {
-      @Override
-      public synchronized void onCompletion(MediaPlayer mp) {
-        self.emitEvent("ended");
-        if(self.getBoolean("loop")) {
-          self.play();
-        }
-      }
-    });
-    player.setOnErrorListener(new OnErrorListener() {
-      @Override
-      public synchronized boolean onError(MediaPlayer mp, int what, int extra) {
-        switch(extra) {
-          case MediaPlayer.MEDIA_ERROR_IO:
-            self._setError("MEDIA_ERROR_IO");
-            self.emitEvent("error");
-            break;
-          case MediaPlayer.MEDIA_ERROR_MALFORMED:
-            self._setError("MEDIA_ERROR_MALFORMED");
-            self.emitEvent("error");
-            break;
-          case MediaPlayer.MEDIA_ERROR_UNSUPPORTED:
-            self._setError("MEDIA_ERROR_UNSUPPORTED");
-            self.emitEvent("error");
-            break;
-          case MediaPlayer.MEDIA_ERROR_TIMED_OUT:
-            self._setError("MEDIA_ERROR_TIMED_OUT");
-            self.emitEvent("error");
-            break;
-        }
-        return true;
-      }
-    });
-    player.setOnInfoListener(new OnInfoListener() {
-      @Override
-      public synchronized boolean onInfo(MediaPlayer mp, int what, int extra) {
-        switch(what) {
-          case MediaPlayer.MEDIA_INFO_UNKNOWN:
-            break;
-          case MediaPlayer.MEDIA_INFO_VIDEO_TRACK_LAGGING:
-            break;
-          case MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
-            break;
-          case MediaPlayer.MEDIA_INFO_BUFFERING_START:
-            self._setBuffered(false);
-            break;
-          case MediaPlayer.MEDIA_INFO_BUFFERING_END:
-            self._setBuffered(true);
-            break;
-          case MediaPlayer.MEDIA_INFO_BAD_INTERLEAVING:
-            break;
-          case MediaPlayer.MEDIA_INFO_NOT_SEEKABLE:
-            self._setSeekable(false);
-            break;
-          case MediaPlayer.MEDIA_INFO_METADATA_UPDATE:
-            self.emitEvent("loadedmetadata");
-            break;
-          case MediaPlayer.MEDIA_INFO_UNSUPPORTED_SUBTITLE:
-            break;
-          case MediaPlayer.MEDIA_INFO_SUBTITLE_TIMED_OUT:
-        }
-        return true;
-      }
-    });
-    player.setOnPreparedListener(new OnPreparedListener() {
-      @Override
-      public synchronized void onPrepared(MediaPlayer mp) {
-        int duration = player.getDuration();
-        if(duration == -1) {
-          self._setSeekable(false);
-        } else {
-          self._setDuration((double)duration / 1000.0);
-        }
-        self.emitEvent("loadeddata");
-        self.emitEvent("canplay");
-        if(self.getBoolean("autoplay")) {
-          self.play();
-        }
-      }
-    });
-    player.setOnSeekCompleteListener(new OnSeekCompleteListener() {
-      @Override
-      public synchronized void onSeekComplete(MediaPlayer mp) {
-        self._setSeeking(false);
-        self.emitEvent("seeked");
-      }
-    });
-    player.setOnTimedMetaDataAvailableListener(new OnTimedMetaDataAvailableListener() {
-      @Override
-      public synchronized void onTimedMetaDataAvailable(MediaPlayer mp, TimedMetaData data) {
-      }
-    });
-    player.setOnTimedTextListener(new OnTimedTextListener() {
-      @Override
-      public synchronized void onTimedText(MediaPlayer mp, TimedText text) {
-      }
-    });
-
-    try {
-      setDataSource(source);
-      this.emitEvent("loadstart");
-      player.prepareAsync();
-    } catch (Exception e) {
-      Log.e("UniversalAudioModule", "Exception", e);
-      this._setError(e.getMessage());
-      this.emitEvent("error");
-      return;
-    }
   }
 
   // public void release(final Integer key) {
