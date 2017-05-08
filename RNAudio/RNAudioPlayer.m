@@ -92,7 +92,7 @@ static int __id__ = 1;
   return NO;
 }
 
-- (void)load {
+- (void)_load {
   NSString *source = [self getStringForKey:@"src"];
   NSString *currentSource = [self getStringForKey:@"currentSrc"];
   
@@ -104,7 +104,12 @@ static int __id__ = 1;
     player = nil;
   }
   
+  RCTLogInfo(@"source:%@", source);
+  
+  [self setString:source forKey:@"currentSrc"];
   if([source isEqualToString:@""]) return;
+
+  loaded = YES;
   
   NSError* error;
   NSURL* url;
@@ -129,13 +134,10 @@ static int __id__ = 1;
   [self emitEvent:@"loadedmetadata"];
   [self emitEvent:@"loadeddata"];
   [self emitEvent:@"canplay"];
-  
-  loaded = YES;
-  [self setString:source forKey:@"currentSrc"];
-  
-  if([self getBoolForKey:@"autoplay"] == YES) {
-    [self play];
-  }
+}
+- (void)load {
+  [self _load];
+  if([self getBoolForKey:@"autoplay"] == YES) [self play];
 }
 
 - (void)play:(double)pos {
@@ -322,6 +324,7 @@ static int __id__ = 1;
 
 - (void)setSource:(NSString *)source {
   [self setString:source forKey:@"src"];
+  [self _load];
 }
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player 

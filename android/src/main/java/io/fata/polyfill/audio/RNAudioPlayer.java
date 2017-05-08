@@ -21,7 +21,6 @@ import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnBufferingUpdateListener;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnInfoListener;
-import android.media.MediaPlayer.OnPreparedListener;
 import android.media.MediaPlayer.OnSeekCompleteListener;
 import android.media.MediaPlayer.OnTimedMetaDataAvailableListener;
 import android.media.MediaPlayer.OnTimedTextListener;
@@ -42,11 +41,12 @@ public class RNAudioPlayer {
   protected static int __id__ = 1;
 
   protected int id;
-  protected MediaPlayer player = null;
+  protected MediaPlayer player = new MediaPlayer();
   protected ReactContext context;
   protected WritableMap data = Arguments.createMap();
   protected Timer timer;
   protected PlaybackParams params = new PlaybackParams();
+  protected Boolean loaded = false;
 
   protected void emitEvent(String type) {
     WritableMap map = Arguments.createMap();
@@ -83,7 +83,7 @@ public class RNAudioPlayer {
     this.setPlaybackRate(1.0);
     this._setPlayed(false);
     this.setPreload("auto");
-    this._setSeekable(true);
+    this._setSeekable(false);
     this._setSeeking(false);
     // this.setSource("");
     this.setTextTracks("");
@@ -120,8 +120,28 @@ public class RNAudioPlayer {
     return false;
   }
   public void load() {
-    String source = this.getString("source");
-    player = new MediaPlayer();
+    this._load();
+    // if(this.getBoolean("autoplay")) {
+    //   Log.v(TAG, "autoplay: true");
+    //   this.play();
+    // }
+  }
+  protected void _load() {
+    String source = this.getString("src");
+    String currentSource = this.getString("currenSrc");
+
+    // dispose
+    if(loaded) {
+      loaded = false;
+      player.reset();
+    }
+
+    Log.v(TAG, "LOADING:" + source);
+    _setCurrentSrc(source);
+
+    if(source.equals("")) return;
+
+    loaded = true;
 
     final RNAudioPlayer self = this;
 
@@ -136,9 +156,7 @@ public class RNAudioPlayer {
       @Override
       public synchronized void onCompletion(MediaPlayer mp) {
         self.emitEvent("ended");
-        if(self.getBoolean("loop")) {
-          self.play();
-        }
+        if(self.getBoolean("loop")) self.play();
       }
     });
     player.setOnErrorListener(new OnErrorListener() {
@@ -196,22 +214,6 @@ public class RNAudioPlayer {
         return true;
       }
     });
-    player.setOnPreparedListener(new OnPreparedListener() {
-      @Override
-      public synchronized void onPrepared(MediaPlayer mp) {
-        int duration = player.getDuration();
-        if(duration == -1) {
-          self._setSeekable(false);
-        } else {
-          self._setDuration((double)duration / 1000.0);
-        }
-        self.emitEvent("loadeddata");
-        self.emitEvent("canplay");
-        if(self.getBoolean("autoplay")) {
-          self.play();
-        }
-      }
-    });
     player.setOnSeekCompleteListener(new OnSeekCompleteListener() {
       @Override
       public synchronized void onSeekComplete(MediaPlayer mp) {
@@ -233,39 +235,60 @@ public class RNAudioPlayer {
     try {
       setDataSource(source);
       this.emitEvent("loadstart");
-      player.prepareAsync();
+
+      player.prepare();
+
+      int duration = player.getDuration();
+      if(duration != -1) {
+        self._setSeekable(true);
+        self._setDuration((double)duration / 1000.0);
+      }
+      self.emitEvent("loadeddata");
+      self.emitEvent("canplay");
+
     } catch (Exception e) {
-      Log.e("RNAudioModule", "Exception", e);
+      Log.e(TAG, "Exception", e);
       this._setError(e.getMessage());
       this.emitEvent("error");
       return;
     }
   }
   protected void play(double pos) {
-    if(this.getBoolean("seekable")) player.seekTo((int)(pos * 1000.0));
-    player.start();
-    this.emitEvent("play");
-    this.emitEvent("playing");
 
-    final RNAudioPlayer self = this;
+    Log.v(TAG, "play.start:" + pos);
 
-    timer = new Timer();
-    timer.scheduleAtFixedRate(new TimerTask() {
-      @Override
-      public void run() {
-        if(player.isPlaying()) {
-          self.setData("currentTime", player.getCurrentPosition() / 1000.0);
-          self.emitEvent("timeupdate");
-        } else {
-          timer.cancel();
-          timer.purge();
+    this.setCurrentTime(pos);
+
+    try {
+      player.start();
+
+      this.emitEvent("play");
+      this.emitEvent("playing");
+
+      final RNAudioPlayer self = this;
+
+      timer = new Timer();
+      timer.scheduleAtFixedRate(new TimerTask() {
+        @Override
+        public void run() {
+          if(player.isPlaying()) {
+            self.setData("currentTime", player.getCurrentPosition() / 1000.0);
+            self.emitEvent("timeupdate");
+          } else {
+            timer.cancel();
+            timer.purge();
+          }
         }
-      }
-    }, 0, 1000);
+      }, 0, 1000);
+    } catch(IllegalStateException e) {
+    }
   }
   public void play() {
-    if(player == null) return;
+
+    if(!loaded) this._load();
+
     if(player.isPlaying()) return;
+
     double pos = player.getCurrentPosition() / 1000.0;
 
     // volume
@@ -275,15 +298,17 @@ public class RNAudioPlayer {
     }
 
     // playbackRate
-    params.setSpeed((float)this.getDouble("defaultPlaybackRate"));
-    player.setPlaybackParams(params);
+    try {
+      params.setSpeed((float)this.getDouble("defaultPlaybackRate"));
+      player.setPlaybackParams(params);
+      this.emitEvent("ratechange");
+    } catch(IllegalStateException e) {
+    }
 
-    this.emitEvent("ratechange");
-    
+
     play(pos);
   }
   public void pause() {
-    if(player == null) return;
     player.pause();
     this.setData("paused", true);
     this.emitEvent("pause");
@@ -293,7 +318,6 @@ public class RNAudioPlayer {
   }
   public void setAutoplay(Boolean v) {
     this.setData("autoplay", v);
-    if(player == null) return;
   }
   protected void _setBuffered(Boolean v) {
     this.setData("buffered", v);
@@ -303,7 +327,6 @@ public class RNAudioPlayer {
   // }
   public void setControls(Boolean v) {
     this.setData("controls", v);
-    if(player == null) return;
     // TODO
   }
   // public void setCrossOrigin(String v) {
@@ -314,7 +337,6 @@ public class RNAudioPlayer {
   }
   public void setCurrentTime(double v) {
     this.setData("currentTime", v);
-    if(player == null) return;
     if(this.getBoolean("seekable") == false)  return;
     player.seekTo((int)(v * 1000.0f));
     this._setSeeking(true);
@@ -322,11 +344,9 @@ public class RNAudioPlayer {
   }
   public void setDefaultMuted(Boolean v) {
     this.setData("defaultMuted", v);
-    if(player == null) return;
   }
   public void setDefaultPlaybackRate(double v) {
     this.setData("defaultPlaybackRate", v);
-    if(player == null) return;
   }
   protected void _setDuration(double v) {
     double current = this.getDouble("duration");
@@ -350,7 +370,6 @@ public class RNAudioPlayer {
   }
   public void setMuted(Boolean v) {
     this.setData("muted", v);
-    if(player == null) return;
     if(v) {
       player.setVolume(0, 0);
     } else {
@@ -362,7 +381,6 @@ public class RNAudioPlayer {
     this.setData("networkState", v);
   }
   public void setPaused(Boolean v) {
-    if(player == null) return;
     if(v) {
       this.pause();
     } else {
@@ -372,17 +390,18 @@ public class RNAudioPlayer {
   }
   public void setPlaybackRate(double v) {
     this.setData("playbackRate", v);
-    if(player == null) return;
     params.setSpeed((float)v);
-    player.setPlaybackParams(params);
-    this.emitEvent("ratechange");
+    try {
+      player.setPlaybackParams(params);
+      this.emitEvent("ratechange");
+    } catch(IllegalStateException e) {
+    }
   }
   protected void _setPlayed(Boolean v) {
     this.setData("played", v);
   }
   public void setPreload(String v) {
     this.setData("preload", v);
-    if(player == null) return;
     // TODO
   }
   protected void _setSeekable(Boolean v) {
@@ -396,7 +415,6 @@ public class RNAudioPlayer {
   }
   public void setVolume(double v) {
     this.setData("volume", v);
-    if(player == null) return;
     if(this.getBoolean("muted") == false) {
       player.setVolume((float)v, (float)v);
       this.emitEvent("volumechange");
@@ -465,14 +483,9 @@ public class RNAudioPlayer {
     }
   }
   public void setSource(String source) {
-    this.setData("source", source);
-
+    this.setData("src", source);
+    this._load();
   }
-
-  // public void release(final Integer key) {
-  //   player.release();
-  // }
-
 }
 // TODO: abort	Fires when the loading of an audio/video is aborted
 // canplay	Fires when the browser can start playing the audio/video

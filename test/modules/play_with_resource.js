@@ -7,12 +7,13 @@ export const description = 'play with resource'
 
 export default function() {
   test = new Audio(mp3Test)
-  test.autoPlay = true
+  // test.autoplay = true
   test.addEventListener('canplay', evt => {
     test.play()
   })
+  test.load()
 }
 
 export const unload = function() {
-  test.pause()
+  test.src = ''
 }

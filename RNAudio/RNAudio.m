@@ -1,5 +1,3 @@
-#import <React/RCTUtils.h>
-#import <React/RCTConvert.h>
 #import "RNAudio.h"
 #import "RNAudioPlayer.h"
 

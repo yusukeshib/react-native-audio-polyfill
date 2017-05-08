@@ -27,6 +27,6 @@ export default async function() {
 }
 
 export const unload = function() {
-  test.pause()
+  test.src = ''
 }
 
