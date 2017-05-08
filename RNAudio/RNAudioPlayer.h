@@ -1,12 +1,12 @@
 #import <AVFoundation/AVFoundation.h>
 #import <React/RCTBridgeModule.h>
-#import "UniversalAudio.h"
+#import "RNAudio.h"
 
-@interface UniversalAudioPlayer : NSObject<AVAudioPlayerDelegate>
+@interface RNAudioPlayer : NSObject<AVAudioPlayerDelegate>
 
 @property (nonatomic, strong) NSNumber *id;
 
-- (id)initWithModule:(UniversalAudio *)module;
+- (id)initWithModule:(RNAudio *)module;
 
 - (void)addTextTrack:(NSString *)v;
 - (BOOL)canPlayType:(NSString *)mediaType;

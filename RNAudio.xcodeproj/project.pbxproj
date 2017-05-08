@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		749BF6FB1EB1AACA00160E2D /* UniversalAudio.m in Sources */ = {isa = PBXBuildFile; fileRef = 749BF6FA1EB1AA9100160E2D /* UniversalAudio.m */; };
-		74DED8DA1EB2D83500DC9FAE /* UniversalAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 74DED8D91EB2D83500DC9FAE /* UniversalAudioPlayer.m */; };
+		74180A691EC01317004C3660 /* RNAudio.m in Sources */ = {isa = PBXBuildFile; fileRef = 74180A661EC01317004C3660 /* RNAudio.m */; };
+		74180A6A1EC01317004C3660 /* RNAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 74180A681EC01317004C3660 /* RNAudioPlayer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,11 +24,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		19825A1E1BD4A89800EE0337 /* libUniversalAudio.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libUniversalAudio.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		749BF6F91EB1AA9100160E2D /* UniversalAudio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UniversalAudio.h; sourceTree = "<group>"; };
-		749BF6FA1EB1AA9100160E2D /* UniversalAudio.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UniversalAudio.m; sourceTree = "<group>"; };
-		74DED8D81EB2D83500DC9FAE /* UniversalAudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UniversalAudioPlayer.h; sourceTree = "<group>"; };
-		74DED8D91EB2D83500DC9FAE /* UniversalAudioPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UniversalAudioPlayer.m; sourceTree = "<group>"; };
+		19825A1E1BD4A89800EE0337 /* libRNAudio.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNAudio.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		74180A651EC01317004C3660 /* RNAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAudio.h; sourceTree = "<group>"; };
+		74180A661EC01317004C3660 /* RNAudio.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAudio.m; sourceTree = "<group>"; };
+		74180A671EC01317004C3660 /* RNAudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAudioPlayer.h; sourceTree = "<group>"; };
+		74180A681EC01317004C3660 /* RNAudioPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAudioPlayer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,7 +45,7 @@
 		19825A151BD4A89800EE0337 = {
 			isa = PBXGroup;
 			children = (
-				749BF6F81EB1AA9100160E2D /* UniversalAudio */,
+				74180A641EC01317004C3660 /* RNAudio */,
 				19825A1F1BD4A89800EE0337 /* Products */,
 			);
 			indentWidth = 2;
@@ -55,28 +55,28 @@
 		19825A1F1BD4A89800EE0337 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				19825A1E1BD4A89800EE0337 /* libUniversalAudio.a */,
+				19825A1E1BD4A89800EE0337 /* libRNAudio.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		749BF6F81EB1AA9100160E2D /* UniversalAudio */ = {
+		74180A641EC01317004C3660 /* RNAudio */ = {
 			isa = PBXGroup;
 			children = (
-				74DED8D81EB2D83500DC9FAE /* UniversalAudioPlayer.h */,
-				74DED8D91EB2D83500DC9FAE /* UniversalAudioPlayer.m */,
-				749BF6F91EB1AA9100160E2D /* UniversalAudio.h */,
-				749BF6FA1EB1AA9100160E2D /* UniversalAudio.m */,
+				74180A651EC01317004C3660 /* RNAudio.h */,
+				74180A661EC01317004C3660 /* RNAudio.m */,
+				74180A671EC01317004C3660 /* RNAudioPlayer.h */,
+				74180A681EC01317004C3660 /* RNAudioPlayer.m */,
 			);
-			path = UniversalAudio;
+			path = RNAudio;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		19825A1D1BD4A89800EE0337 /* UniversalAudio */ = {
+		19825A1D1BD4A89800EE0337 /* RNAudio */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 19825A271BD4A89800EE0337 /* Build configuration list for PBXNativeTarget "UniversalAudio" */;
+			buildConfigurationList = 19825A271BD4A89800EE0337 /* Build configuration list for PBXNativeTarget "RNAudio" */;
 			buildPhases = (
 				19825A1A1BD4A89800EE0337 /* Sources */,
 				19825A1B1BD4A89800EE0337 /* Frameworks */,
@@ -86,9 +86,9 @@
 			);
 			dependencies = (
 			);
-			name = UniversalAudio;
+			name = RNAudio;
 			productName = UniversalAudio;
-			productReference = 19825A1E1BD4A89800EE0337 /* libUniversalAudio.a */;
+			productReference = 19825A1E1BD4A89800EE0337 /* libRNAudio.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -97,16 +97,16 @@
 		19825A161BD4A89800EE0337 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				CLASSPREFIX = UniversalAudio;
+				CLASSPREFIX = RCTAudio;
 				LastUpgradeCheck = 0700;
-				ORGANIZATIONNAME = "fata, inc.";
+				ORGANIZATIONNAME = "Yusuke Shibata";
 				TargetAttributes = {
 					19825A1D1BD4A89800EE0337 = {
 						CreatedOnToolsVersion = 7.0.1;
 					};
 				};
 			};
-			buildConfigurationList = 19825A191BD4A89800EE0337 /* Build configuration list for PBXProject "UniversalAudio" */;
+			buildConfigurationList = 19825A191BD4A89800EE0337 /* Build configuration list for PBXProject "RNAudio" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -118,7 +118,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				19825A1D1BD4A89800EE0337 /* UniversalAudio */,
+				19825A1D1BD4A89800EE0337 /* RNAudio */,
 			);
 		};
 /* End PBXProject section */
@@ -128,8 +128,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				749BF6FB1EB1AACA00160E2D /* UniversalAudio.m in Sources */,
-				74DED8DA1EB2D83500DC9FAE /* UniversalAudioPlayer.m in Sources */,
+				74180A691EC01317004C3660 /* RNAudio.m in Sources */,
+				74180A6A1EC01317004C3660 /* RNAudioPlayer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,6 +173,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../react-native/React/**",
+					"$(SRCROOT)/../node_modules/react-native/React",
 					"$(SRCROOT)/node_modules/react-native/React/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -213,6 +214,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../react-native/React/**",
+					"$(SRCROOT)/../node_modules/react-native/React",
 					"$(SRCROOT)/node_modules/react-native/React/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -243,7 +245,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		19825A191BD4A89800EE0337 /* Build configuration list for PBXProject "UniversalAudio" */ = {
+		19825A191BD4A89800EE0337 /* Build configuration list for PBXProject "RNAudio" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				19825A251BD4A89800EE0337 /* Debug */,
@@ -252,7 +254,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		19825A271BD4A89800EE0337 /* Build configuration list for PBXNativeTarget "UniversalAudio" */ = {
+		19825A271BD4A89800EE0337 /* Build configuration list for PBXNativeTarget "RNAudio" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				19825A281BD4A89800EE0337 /* Debug */,

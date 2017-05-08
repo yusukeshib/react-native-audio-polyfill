@@ -1,17 +1,17 @@
-#import "UniversalAudioPlayer.h"
+#import "RNAudioPlayer.h"
 #import <React/RCTConvert.h>
 #import <React/RCTLog.h>
 
 static int __id__ = 1;
 
-@implementation UniversalAudioPlayer {
+@implementation RNAudioPlayer {
   AVAudioPlayer *player;
   NSMutableDictionary *data;
-  UniversalAudio *module;
+  RNAudio *module;
   NSTimer *timer;
 }
 
-- (id)initWithModule:(UniversalAudio *)_module {
+- (id)initWithModule:(RNAudio *)_module {
   if(self = [super init]) {
     self.id = [NSNumber numberWithInt:__id__++];
     module = _module;

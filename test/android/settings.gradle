@@ -1,5 +1,5 @@
 rootProject.name = 'test'
-include ':react-universal-audio'
-project(':react-universal-audio').projectDir = new File(rootProject.projectDir, '../../android')
+include ':react-native-audio-polyfill'
+project(':react-native-audio-polyfill').projectDir = new File(rootProject.projectDir, '../../android')
 
 include ':app'

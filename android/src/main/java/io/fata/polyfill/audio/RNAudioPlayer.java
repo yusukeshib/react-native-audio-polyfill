@@ -1,4 +1,4 @@
-package io.fata.universal.audio;
+package io.fata.polyfill.audio;
 
 import java.math.BigInteger;
 import java.io.File;
@@ -35,7 +35,7 @@ import com.facebook.react.bridge.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
-public class UniversalAudioPlayer {
+public class RNAudioPlayer {
 
   protected final String TAG = "ReactNative";
 
@@ -55,9 +55,9 @@ public class UniversalAudioPlayer {
     map.putString("type", type);
 
     RCTDeviceEventEmitter emitter = context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
-    emitter.emit("UniversalAudioEvent", map);
+    emitter.emit("RNAudioEvent", map);
   }
-  public UniversalAudioPlayer(ReactContext context) {
+  public RNAudioPlayer(ReactContext context) {
     this.context = context;
     this.id = __id__++;
 
@@ -123,7 +123,7 @@ public class UniversalAudioPlayer {
     String source = this.getString("source");
     player = new MediaPlayer();
 
-    final UniversalAudioPlayer self = this;
+    final RNAudioPlayer self = this;
 
     // event
     player.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
@@ -235,7 +235,7 @@ public class UniversalAudioPlayer {
       this.emitEvent("loadstart");
       player.prepareAsync();
     } catch (Exception e) {
-      Log.e("UniversalAudioModule", "Exception", e);
+      Log.e("RNAudioModule", "Exception", e);
       this._setError(e.getMessage());
       this.emitEvent("error");
       return;
@@ -247,7 +247,7 @@ public class UniversalAudioPlayer {
     this.emitEvent("play");
     this.emitEvent("playing");
 
-    final UniversalAudioPlayer self = this;
+    final RNAudioPlayer self = this;
 
     timer = new Timer();
     timer.scheduleAtFixedRate(new TimerTask() {

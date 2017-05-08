@@ -23,7 +23,7 @@
 		140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
-		74AA80531EB2CEEC006B8EDE /* libUniversalAudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7479F9C71EB2CE0F00DA72F9 /* libUniversalAudio.a */; };
+		74180A6C1EC01385004C3660 /* libRNAudio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 74180A6B1EC01385004C3660 /* libRNAudio.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		F75A3ABD1E57FECE00FEEC86 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F75A3ABC1E57FECE00FEEC86 /* libc++.tbd */; };
 		F75A3ADB1E57FF5B00FEEC86 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F75A3ADA1E57FF5B00FEEC86 /* libstdc++.tbd */; };
@@ -198,12 +198,12 @@
 			remoteGlobalIDString = 2D2A28201D9B03D100D4039D;
 			remoteInfo = "RCTAnimation-tvOS";
 		};
-		7479F9C61EB2CE0F00DA72F9 /* PBXContainerItemProxy */ = {
+		74F7C63B1EC0139A003038C3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 7479F9C21EB2CE0F00DA72F9 /* UniversalAudio.xcodeproj */;
+			containerPortal = 74180A5D1EC01040004C3660 /* RNAudio.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 19825A1E1BD4A89800EE0337;
-			remoteInfo = UniversalAudio;
+			remoteInfo = RNAudio;
 		};
 		78C398B81ACF4ADC00677621 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -242,7 +242,8 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = test/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
-		7479F9C21EB2CE0F00DA72F9 /* UniversalAudio.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UniversalAudio.xcodeproj; path = ../../UniversalAudio.xcodeproj; sourceTree = "<group>"; };
+		74180A5D1EC01040004C3660 /* RNAudio.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNAudio.xcodeproj; path = ../../RNAudio.xcodeproj; sourceTree = "<group>"; };
+		74180A6B1EC01385004C3660 /* libRNAudio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRNAudio.a; path = "../../build/Debug-iphoneos/libRNAudio.a"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		F75A3ABC1E57FECE00FEEC86 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
@@ -265,6 +266,7 @@
 				F75A3ADB1E57FF5B00FEEC86 /* libstdc++.tbd in Frameworks */,
 				F75A3ABD1E57FECE00FEEC86 /* libc++.tbd in Frameworks */,
 				5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */,
+				74180A6C1EC01385004C3660 /* libRNAudio.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,
@@ -275,7 +277,6 @@
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
-				74AA80531EB2CEEC006B8EDE /* libUniversalAudio.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -397,10 +398,10 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		7479F9C31EB2CE0F00DA72F9 /* Products */ = {
+		74F7C61F1EC01399003038C3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				7479F9C71EB2CE0F00DA72F9 /* libUniversalAudio.a */,
+				74F7C63C1EC0139A003038C3 /* libRNAudio.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -417,7 +418,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				7479F9C21EB2CE0F00DA72F9 /* UniversalAudio.xcodeproj */,
+				74180A5D1EC01040004C3660 /* RNAudio.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
@@ -467,6 +468,7 @@
 		F75A3ABB1E57FECD00FEEC86 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				74180A6B1EC01385004C3660 /* libRNAudio.a */,
 				F75A3ADA1E57FF5B00FEEC86 /* libstdc++.tbd */,
 				F75A3ABC1E57FECE00FEEC86 /* libc++.tbd */,
 			);
@@ -588,8 +590,8 @@
 					ProjectRef = 146833FF1AC3E56700842450 /* React.xcodeproj */;
 				},
 				{
-					ProductGroup = 7479F9C31EB2CE0F00DA72F9 /* Products */;
-					ProjectRef = 7479F9C21EB2CE0F00DA72F9 /* UniversalAudio.xcodeproj */;
+					ProductGroup = 74F7C61F1EC01399003038C3 /* Products */;
+					ProjectRef = 74180A5D1EC01040004C3660 /* RNAudio.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -762,11 +764,11 @@
 			remoteRef = 5E9157341DD0AC6500FF2AA8 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		7479F9C71EB2CE0F00DA72F9 /* libUniversalAudio.a */ = {
+		74F7C63C1EC0139A003038C3 /* libRNAudio.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libUniversalAudio.a;
-			remoteRef = 7479F9C61EB2CE0F00DA72F9 /* PBXContainerItemProxy */;
+			path = libRNAudio.a;
+			remoteRef = 74F7C63B1EC0139A003038C3 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		78C398B91ACF4ADC00677621 /* libRCTLinking.a */ = {

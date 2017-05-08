@@ -1,4 +1,4 @@
-package io.fata.universal.audio;
+package io.fata.polyfill.audio;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,11 +10,11 @@ import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 
-public class UniversalAudioPackage implements ReactPackage {
+public class RNAudioPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules (ReactApplicationContext context) {
     List<NativeModule> modules = new ArrayList<>();
-    modules.add(new UniversalAudioModule(context));
+    modules.add(new RNAudioModule(context));
     return modules;
   }
 
