@@ -1,4 +1,4 @@
-react-universal-audio
+react-native-audio-polyfill
 ==========
 
 html Audio class polyfill for react-native.
@@ -6,23 +6,23 @@ You can use Audio for android,ios without modification to browser code.
 
 ## Usage
 
-<!--
-Using ES2017 `async` / `await` internally, you need adding async/await suport in babelrc so in your react-native project.
-
 ```javascript
-```
--->
+import Audio from 'react-native-audio-polyfill'
 
-```javascript
-import Audio from 'react-universal-audio'
+const audio1 = new Audio()
 
-const sound = new Audio('./test.mp3')
-sound.play()
+audio1.onload = () => {
+  console.log('audio loaded')
+  audio1.play()
+}
+audio1.addEventListener('error', err => console.log('audio error:', err)
+audio1.src = './test.mp3'
+audio1.load()
 ```
 
 ## Install
 
-`npm install react-universal-audio`
+`npm install react-native-audio-polyfill`
 
 ## Add it to your project
 
