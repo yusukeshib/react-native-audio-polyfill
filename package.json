@@ -1,12 +1,9 @@
 {
-  "name": "react-universal-audio",
-  "version": "1.1.5",
+  "name": "react-native-audio-polyfill",
+  "version": "1.0.0",
   "description": "Audio polyfill for desktop and native",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "build": "webpack",
-    "test:build": "webpack --config=webpack.config.test.js",
     "ios:build": "cd test && react-native run-ios",
     "ios:start": "rm -rf $TMPDIR/react-* && watchman watch-del-all adb reverse tcp:8081 tcp:8081 && ./node_modules/react-native/packager/packager.sh --root test",
     "android:start": "rm -rf $TMPDIR/react-* && watchman watch-del-all adb reverse tcp:8081 tcp:8081 && ./node_modules/react-native/packager/packager.sh --root test",
@@ -16,13 +13,13 @@
     "lint:fix": "eslint src test --fix"
   },
   "bugs": {
-    "url": "https://github.com/yusukeshibata/react-universal-audio/issues"
+    "url": "https://github.com/yusukeshibata/react-native-audio-polyfill/issues"
   },
   "repository": {
-    "url": "git+ssh://git@github.com/yusukeshibata/react-universal-audio.git",
+    "url": "git+ssh://git@github.com/yusukeshibata/react-native-audio-polyfill.git",
     "type": "git"
   },
-  "homepage": "https://github.com/yusukeshibata/react-universal-audio#readme",
+  "homepage": "https://github.com/yusukeshibata/react-native-audio-polyfill#readme",
   "author": "Yusuke Shibata <shibata@fata.io>",
   "license": "MIT",
   "peerDependencies": {
