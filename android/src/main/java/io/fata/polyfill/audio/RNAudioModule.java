@@ -83,6 +83,13 @@ public class RNAudioModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void setCache(int audioId, Boolean v) {
+    RNAudioPlayer player = getPlayer(audioId);
+    if(player == null) return;
+    player.setCache(v);
+  }
+
+  @ReactMethod
   public void setAutoplay(int audioId, Boolean v) {
     RNAudioPlayer player = getPlayer(audioId);
     if(player == null) return;

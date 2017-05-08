@@ -38,6 +38,7 @@ public class RNAudioPlayer {
 
   protected final String TAG = "ReactNative";
 
+  protected static RNAudioCache cache;
   protected static int __id__ = 1;
 
   protected int id;
@@ -58,6 +59,10 @@ public class RNAudioPlayer {
     emitter.emit("RNAudioEvent", map);
   }
   public RNAudioPlayer(ReactContext context) {
+    if(cache == null) {
+      Context appContext = context.getApplicationContext();
+      cache = new RNAudioCache(appContext);
+    }
     this.context = context;
     this.id = __id__++;
 
@@ -316,6 +321,9 @@ public class RNAudioPlayer {
   public void setAudioTracks(String v) {
     this.setData("audioTracks", v);
   }
+  public void setCache(Boolean v) {
+    this.setData("cache", v);
+  }
   public void setAutoplay(Boolean v) {
     this.setData("autoplay", v);
   }
@@ -447,7 +455,9 @@ public class RNAudioPlayer {
     // remote
     else if(source.startsWith("http://") || source.startsWith("https://")) {
       player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-      player.setDataSource(source);
+      cache.put(source);
+      FileInputStream stream = context.openFileInput(cache.get(source));
+      player.setDataSource(stream.getFD());
     }
     // data-uri
     else if(source.startsWith("data:")) {
@@ -487,25 +497,25 @@ public class RNAudioPlayer {
     this._load();
   }
 }
-// TODO: abort	Fires when the loading of an audio/video is aborted
-// canplay	Fires when the browser can start playing the audio/video
-// TODO: canplaythrough	Fires when the browser can play through the audio/video without stopping for buffering
-// durationchange	Fires when the duration of the audio/video is changed
-// TODO: emptied	Fires when the current playlist is empty
-// ended	Fires when the current playlist is ended
-// error	Fires when an error occurred during the loading of an audio/video
-// loadeddata	Fires when the browser has loaded the current frame of the audio/video
-// loadedmetadata	Fires when the browser has loaded meta data for the audio/video
-// loadstart	Fires when the browser starts looking for the audio/video
-// pause	Fires when the audio/video has been paused
-// play	Fires when the audio/video has been started or is no longer paused
-// playing	Fires when the audio/video is playing after having been paused or stopped for buffering
-// progress	Fires when the browser is downloading the audio/video
-// ratechange	Fires when the playing speed of the audio/video is changed
-// seeked	Fires when the user is finished moving/skipping to a new position in the audio/video
-// seeking	Fires when the user starts moving/skipping to a new position in the audio/video
-// TODO: stalled	Fires when the browser is trying to get media data, but data is not available
-// TODO: suspend	Fires when the browser is intentionally not getting media data
-// timeupdate	Fires when the current playback position has changed
-// volumechange	Fires when the volume has been changed
-// TODO: waiting	Fires when the video stops because it needs to buffer the next frame
+// TODO: abort  Fires when the loading of an audio/video is aborted
+// canplay  Fires when the browser can start playing the audio/video
+// TODO: canplaythrough Fires when the browser can play through the audio/video without stopping for buffering
+// durationchange Fires when the duration of the audio/video is changed
+// TODO: emptied  Fires when the current playlist is empty
+// ended  Fires when the current playlist is ended
+// error  Fires when an error occurred during the loading of an audio/video
+// loadeddata Fires when the browser has loaded the current frame of the audio/video
+// loadedmetadata Fires when the browser has loaded meta data for the audio/video
+// loadstart  Fires when the browser starts looking for the audio/video
+// pause  Fires when the audio/video has been paused
+// play Fires when the audio/video has been started or is no longer paused
+// playing  Fires when the audio/video is playing after having been paused or stopped for buffering
+// progress Fires when the browser is downloading the audio/video
+// ratechange Fires when the playing speed of the audio/video is changed
+// seeked Fires when the user is finished moving/skipping to a new position in the audio/video
+// seeking  Fires when the user starts moving/skipping to a new position in the audio/video
+// TODO: stalled  Fires when the browser is trying to get media data, but data is not available
+// TODO: suspend  Fires when the browser is intentionally not getting media data
+// timeupdate Fires when the current playback position has changed
+// volumechange Fires when the volume has been changed
+// TODO: waiting  Fires when the video stops because it needs to buffer the next frame

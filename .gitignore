@@ -6,3 +6,5 @@ node_modules/
 Pods/
 ios/build
 __snapshots__
+.idea/
+.gradle/
