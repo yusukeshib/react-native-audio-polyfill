@@ -9,6 +9,7 @@ static int __id__ = 1;
   NSMutableDictionary *data;
   RNAudio *module;
   NSTimer *timer;
+  BOOL loaded;
 }
 
 - (id)initWithModule:(RNAudio *)_module {
@@ -16,6 +17,7 @@ static int __id__ = 1;
     self.id = [NSNumber numberWithInt:__id__++];
     module = _module;
     data = [[NSMutableDictionary alloc] init];
+    loaded = NO;
 
     // default settings
     [self setAudioTracks:@""];
@@ -91,8 +93,49 @@ static int __id__ = 1;
 }
 
 - (void)load {
-  if(player == nil) return;
-  // TODO
+  NSString *source = [self getStringForKey:@"src"];
+  NSString *currentSource = [self getStringForKey:@"currentSrc"];
+  
+  if(loaded && [currentSource isEqualToString:source]) return;
+  
+  // dispose if loaded
+  if(loaded) {
+    loaded = NO;
+    player = nil;
+  }
+  
+  if([source isEqualToString:@""]) return;
+  
+  NSError* error;
+  NSURL* url;
+  
+  // remote
+  // base64
+  if([source hasPrefix:@"http"] || [source hasPrefix:@"data:"]) {
+    url = [NSURL URLWithString:[source stringByRemovingPercentEncoding]];
+  }
+  
+  // local
+  else {
+    url = [NSURL fileURLWithPath:[source stringByRemovingPercentEncoding]];
+  }
+  
+  player = [[AVAudioPlayer alloc] initWithData:[[NSData alloc] initWithContentsOfURL:url] error:&error];
+  player.delegate = self;
+  player.enableRate = YES;
+  
+  [player prepareToPlay];
+  [self _setDuration:player.duration];
+  [self emitEvent:@"loadedmetadata"];
+  [self emitEvent:@"loadeddata"];
+  [self emitEvent:@"canplay"];
+  
+  loaded = YES;
+  [self setString:source forKey:@"currentSrc"];
+  
+  if([self getBoolForKey:@"autoplay"] == YES) {
+    [self play];
+  }
 }
 
 - (void)play:(double)pos {
@@ -119,6 +162,8 @@ static int __id__ = 1;
 }
 
 - (void)play {
+  [self load];
+  
   if(player == nil) return;
   if([player isPlaying]) return;
   double pos = player.currentTime;
@@ -276,36 +321,7 @@ static int __id__ = 1;
 }
 
 - (void)setSource:(NSString *)source {
-
-  // TODO: data-uri
-  
-  NSError* error;
-  NSURL* url;
-
-  // remote
-  // base64
-
-  if([source hasPrefix:@"http"] || [source hasPrefix:@"data:"]) {
-    url = [NSURL URLWithString:[source stringByRemovingPercentEncoding]];
-  }
-  // local
-  else {
-    url = [NSURL fileURLWithPath:[source stringByRemovingPercentEncoding]];
-  }
-
-  player = [[AVAudioPlayer alloc] initWithData:[[NSData alloc] initWithContentsOfURL:url] error:&error];
-  player.delegate = self;
-  player.enableRate = YES;
-
-  [player prepareToPlay];
-  [self _setDuration:player.duration];
-  [self emitEvent:@"loadedmetadata"];
-  [self emitEvent:@"loadeddata"];
-  [self emitEvent:@"canplay"];
-  
-  if([self getBoolForKey:@"autoplay"] == YES) {
-    [self play];
-  }
+  [self setString:source forKey:@"src"];
 }
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player 
