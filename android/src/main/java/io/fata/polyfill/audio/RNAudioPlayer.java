@@ -12,14 +12,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import android.util.Base64;
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnBufferingUpdateListener;
-import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnInfoListener;
 import android.media.MediaPlayer.OnSeekCompleteListener;
 import android.media.MediaPlayer.OnTimedMetaDataAvailableListener;
@@ -27,8 +24,6 @@ import android.media.MediaPlayer.OnTimedTextListener;
 import android.media.TimedMetaData;
 import android.media.TimedText;
 import android.media.PlaybackParams;
-import android.net.Uri;
-import android.media.AudioManager;
 import android.util.Log;
 import com.facebook.react.bridge.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -443,53 +438,9 @@ public class RNAudioPlayer {
     return md5;
   }
   protected void setDataSource(String source) throws IOException {
-
-    int resid = context.getResources().getIdentifier(source, "raw", this.context.getPackageName());
-
-    // resource
-    if(resid != 0) {
-      AssetFileDescriptor afd = context.getResources().openRawResourceFd(resid);
-      player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-      afd.close();
-    }
-    // remote
-    else if(source.startsWith("http://") || source.startsWith("https://")) {
-      player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-      cache.put(source);
-      FileInputStream stream = context.openFileInput(cache.get(source));
-      player.setDataSource(stream.getFD());
-    }
-    // data-uri
-    else if(source.startsWith("data:")) {
-      final String PREFIX = "data:audio/";
-      // get hash of data
-      String md5Hash = getMD5EncryptedString(source);
-      String extension = source.substring(PREFIX.length(), source.indexOf(';'));
-      String fileName = md5Hash + "." + extension;
-
-      FileInputStream input;
-      Context appContext = context.getApplicationContext();
-      try {
-        input = appContext.openFileInput(fileName);
-      } catch(FileNotFoundException e) {
-        // create cache
-        String encodingPrefix = "base64,";
-        int contentStartIndex = source.indexOf(encodingPrefix) + encodingPrefix.length();
-        String base64String = source.substring(contentStartIndex);
-        byte[] decodedBytes = Base64.decode(base64String, Base64.NO_WRAP);
-        FileOutputStream outputStream = appContext.openFileOutput(md5Hash+"."+extension, Context.MODE_PRIVATE);
-        outputStream.write(decodedBytes);
-        outputStream.close();
-        input = appContext.openFileInput(fileName);
-      }
-      player.setDataSource(input.getFD());
-      input.close();
-    }
-    // file
-    else {
-      AssetFileDescriptor afd = context.getAssets().openFd(source);
-      player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-      afd.close();
+    RNAudioMediaSource mediaSource = cache.get(source);
+    if(mediaSource.isValid()) {
+      player.setDataSource(mediaSource);
     }
   }
   public void setSource(String source) {
