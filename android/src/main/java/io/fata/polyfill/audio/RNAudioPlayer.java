@@ -24,6 +24,7 @@ import android.media.MediaPlayer.OnTimedTextListener;
 import android.media.TimedMetaData;
 import android.media.TimedText;
 import android.media.PlaybackParams;
+import android.media.AudioManager;
 import android.util.Log;
 import com.facebook.react.bridge.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -438,9 +439,10 @@ public class RNAudioPlayer {
     return md5;
   }
   protected void setDataSource(String source) throws IOException {
-    RNAudioMediaSource mediaSource = cache.get(source);
-    if(mediaSource.isValid()) {
-      player.setDataSource(mediaSource);
+    String filename = cache.get(source);
+    if(filename != null) {
+      FileInputStream stream = context.openFileInput(filename);
+      player.setDataSource(stream.getFD());
     }
   }
   public void setSource(String source) {
