@@ -439,9 +439,10 @@ public class RNAudioPlayer {
     return md5;
   }
   protected void setDataSource(String source) throws IOException {
-    String filename = cache.get(source);
-    if(filename != null) {
-      FileInputStream stream = context.openFileInput(filename);
+    String filepath = cache.get(source);
+    if(filepath != null) {
+      File file = new File(filepath);
+      FileInputStream stream = new FileInputStream(file);
       player.setDataSource(stream.getFD());
     }
   }

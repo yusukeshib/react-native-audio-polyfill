@@ -118,9 +118,10 @@ public class RNAudioCache {
       }
 
     } catch (Exception e) {
+      Log.v(TAG, e.getMessage());
       return null;
     } finally {
-      return filename;
+      return file.getAbsolutePath();
     }
   }
 }
