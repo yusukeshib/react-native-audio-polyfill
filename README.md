@@ -15,8 +15,31 @@ audio1.onload = () => {
   console.log('audio loaded')
   audio1.play()
 }
+```
+
+### Play local files
+```javascript
+audio1.addEventListener('loadeddata', () => audio1.play())
 audio1.addEventListener('error', err => console.log('audio error:', err)
 audio1.src = './test.mp3'
+audio1.load()
+```
+
+### Play remote files
+```javascript
+audio1.addEventListener('loadeddata', () => audio1.play())
+audio1.addEventListener('error', err => console.log('audio error:', err)
+audio1.src = 'http://www.music.helsinki.fi/tmt/opetus/uusmedia/esim/a2002011001-e02-128k.mp3'
+audio1.load()
+```
+
+### Play assets in native
+```javascript
+import asset1 from './test.mp3'
+
+audio1.addEventListener('loadeddata', () => audio1.play())
+audio1.addEventListener('error', err => console.log('audio error:', err)
+audio1.src = asset1
 audio1.load()
 ```
 
