@@ -323,7 +323,9 @@ static int __id__ = 1;
 }
 
 - (void)setSource:(NSDictionary *)source {
-  [self setString:[source objectForKey:@"uri"] forKey:@"src"];
+  NSString *src = [source objectForKey:@"path"];
+  if(src == nil) src = [source objectForKey:@"uri"];
+  [self setString:src forKey:@"src"];
   [self _load];
 }
 
