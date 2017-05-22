@@ -104,7 +104,7 @@ static int __id__ = 1;
     player = nil;
   }
   
-  RCTLogInfo(@"source:%@", source);
+  RCTLogInfo(@"Audio loading source:%@", source);
   
   [self setString:source forKey:@"currentSrc"];
   if([source isEqualToString:@""]) return;
@@ -322,8 +322,8 @@ static int __id__ = 1;
   }
 }
 
-- (void)setSource:(NSString *)source {
-  [self setString:source forKey:@"src"];
+- (void)setSource:(NSDictionary *)source {
+  [self setString:[source objectForKey:@"uri"] forKey:@"src"];
   [self _load];
 }
 

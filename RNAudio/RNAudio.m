@@ -182,7 +182,7 @@ RCT_EXPORT_METHOD(setPreload:(nonnull NSNumber *)audioId
 }
 
 RCT_EXPORT_METHOD(setSource:(nonnull NSNumber *)audioId
-                      value:(nonnull NSString *)value)
+                      value:(nonnull NSDictionary *)value)
 {
   RNAudioPlayer * player = [self getPlayer:audioId];
   if(player == nil) return;
