@@ -29,6 +29,6 @@
 - (void)setPreload:(NSString *)v;
 - (void)setTextTracks:(NSString *)v;
 - (void)setVolume:(double)v;
-- (void)setSource:(NSString *)source;
+- (void)setSource:(NSDictionary *)source;
 
 @end
