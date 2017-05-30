@@ -104,7 +104,7 @@ static int __id__ = 1;
     player = nil;
   }
   
-  RCTLogInfo(@"Audio loading source:%@", source);
+  // RCTLogInfo(@"Audio loading source:%@", source);
   
   [self setString:source forKey:@"currentSrc"];
   if([source isEqualToString:@""]) return;
