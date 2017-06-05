@@ -45,6 +45,18 @@ RCT_REMAP_METHOD(create,
   resolve(map);
 }
 
+RCT_REMAP_METHOD(unload,
+    audioId:(nonnull NSNumber *)audioId
+   resolver:(RCTPromiseResolveBlock)resolve
+   rejecter:(RCTPromiseRejectBlock)reject)
+{
+  RNAudioPlayer *player = [self getPlayer:audioId];
+  if(player == nil) return;
+  [player unload];
+  NSString *key = [player.id stringValue];
+  [audioMap removeObjectForKey: key];
+}
+
 RCT_EXPORT_METHOD(addTextTrack:(nonnull NSNumber *)audioId
                          value:(nonnull NSString *)value)
 {

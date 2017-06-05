@@ -4,7 +4,7 @@ import mp3Test2 from './mpthreetest'
 
 let test
 
-const sleep = sec => new Promise((resolve ,reject) => setTimeout(resolve, sec*1000))
+const sleep = sec => new Promise((resolve, reject) => setTimeout(resolve, sec * 1000))
 
 export const description = 'change src'
 

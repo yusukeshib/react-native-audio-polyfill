@@ -11,6 +11,7 @@
 - (void)addTextTrack:(NSString *)v;
 - (BOOL)canPlayType:(NSString *)mediaType;
 - (void)load;
+- (void)unload;
 - (void)play;
 - (void)pause;
 - (void)setAudioTracks:(NSString *)v;

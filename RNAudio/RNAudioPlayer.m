@@ -140,6 +140,12 @@ static int __id__ = 1;
   if([self getBoolForKey:@"autoplay"] == YES) [self play];
 }
 
+- (void)unload {
+  loaded = NO;
+  player = nil;
+  [self setSource: @""];
+}
+
 - (void)play:(double)pos {
   player.currentTime = pos;
   [player play];
