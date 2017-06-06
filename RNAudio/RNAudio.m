@@ -40,9 +40,7 @@ RCT_REMAP_METHOD(create,
 {
   RNAudioPlayer *player = [[RNAudioPlayer alloc] initWithModule:self];
   [self setPlayer:player];
-  NSMutableDictionary *map = [[NSMutableDictionary alloc] init];
-  [map setValue:player.id forKey:@"audioId"];
-  resolve(map);
+  resolve(@{@"audioId": player.id});
 }
 
 RCT_REMAP_METHOD(unload,
@@ -54,6 +52,7 @@ RCT_REMAP_METHOD(unload,
   if(player == nil) return;
   [player unload];
   [audioMap removeObjectForKey: [audioId stringValue]];
+  resolve(@{@"audioId": audioId});
 }
 
 RCT_EXPORT_METHOD(addTextTrack:(nonnull NSNumber *)audioId
