@@ -143,7 +143,7 @@ static int __id__ = 1;
 - (void)unload {
   loaded = NO;
   player = nil;
-  [self setSource: @""];
+  [self setString:@"" forKey:@"src"];
 }
 
 - (void)play:(double)pos {
@@ -332,7 +332,7 @@ static int __id__ = 1;
   NSString *src = [source objectForKey:@"path"];
   if(src == nil) src = [source objectForKey:@"uri"];
   [self setString:src forKey:@"src"];
-  [self _load];
+  if(src != nil) [self _load];
 }
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player 

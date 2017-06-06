@@ -1,39 +1,46 @@
 import React, { Component } from 'react'
 import Button from './button'
-import tests from './modules'
+import { View } from 'react-native'
+import Audio from 'react-native-audio-polyfill'
+
+import testMp3 from './test.mp3'
+
+class Test {
+  constructor() {
+    this._test = new Audio()
+  }
+  load() {
+    this._test.src = testMp3
+    this._test.play()
+  }
+  unload() {
+    this._test.src = undefined
+    this._test.unload()
+  }
+}
 
 export default class Main extends Component {
   constructor(props) {
     super(props)
-    this.state = {}
-    this._index = -1
-    this.onTouchEnd = this.onTouchEnd.bind(this)
-    this.next = this.next.bind(this)
+    this.onAdd = this.onAdd.bind(this)
+    this.onRemove = this.onRemove.bind(this)
+    this._queue = []
   }
-  async update(fn) {
-    if(fn) await fn()
+  onAdd() {
+    const t = new Test()
+    t.load()
+    this._queue.push(t)
   }
-  next() {
-    if(this._test && this._test.unload) this._test.unload()
-
-    this._index = (this._index + 1) % tests.length
-
-    const test =  tests[this._index]
-
-    this.setState({ name: test.description })
-    this.update(test.default)
-    this._test = test
-  }
-  componentDidMount() {
-    this.next()
-  }
-  onTouchEnd() {
-    this.next()
+  onRemove() {
+    const t = this._queue.shift()
+    if(t) t.unload()
   }
   render() {
-    const { name } = this.state
     return (
-      <Button title={name} onPress={this.next} />
+      <View>
+        <Button title='+' onPress={this.onAdd} />
+        <Button title='-' onPress={this.onRemove} />
+      </View>
     )
   }
 }

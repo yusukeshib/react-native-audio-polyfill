@@ -1,0 +1,13 @@
+{
+  "presets": [
+    "react-native"
+  ],
+  "plugins": [
+    "transform-regenerator",
+    [ "module-resolver", {
+      "alias": {
+        "react-native-audio-polyfill": "."
+      }
+    }]
+  ],
+}

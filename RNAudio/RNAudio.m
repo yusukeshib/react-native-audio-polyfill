@@ -53,8 +53,7 @@ RCT_REMAP_METHOD(unload,
   RNAudioPlayer *player = [self getPlayer:audioId];
   if(player == nil) return;
   [player unload];
-  NSString *key = [player.id stringValue];
-  [audioMap removeObjectForKey: key];
+  [audioMap removeObjectForKey: [audioId stringValue]];
 }
 
 RCT_EXPORT_METHOD(addTextTrack:(nonnull NSNumber *)audioId
