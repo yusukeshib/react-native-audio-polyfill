@@ -1,7 +1,6 @@
 import { Platform, NativeEventEmitter, DeviceEventEmitter, NativeModules } from 'react-native'
 import EventEmitter from 'event-emitter'
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource'
-import { error, log } from './utils/console'
 
 const { RNAudio } = NativeModules
 
@@ -90,7 +89,7 @@ export default class Audio {
       this._emitter.emit('init')
       if(this._source) this.src = this._source
     }, err => {
-      error('Audio error:', err)
+      console.error('Audio error:', err)
     })
   }
   async _init() {
@@ -100,7 +99,7 @@ export default class Audio {
   }
   _emit(evt) {
     this._data = { ...this._data, ...evt }
-    // log('emitting:', evt.type, this._data)
+    // console.log('emitting:', evt.type, this._data)
     this._emitter.emit(evt.type, evt)
   }
   addEventListener(type, listener) {
@@ -256,13 +255,12 @@ export default class Audio {
       this._source = v
       return
     }
-    if(typeof v === 'number') {
-      v = resolveAssetSource(v)
-    } else if(typeof v === 'string') {
-      v = { uri: v }
+    this._source = resolveAssetSource(v)
+    if(this._source.uri.startsWith('file://')) {
+      const path = this._source.uri.substr('file://'.length)
+      this._source = { ...this._source, path }
     }
-    this._source = v
-    this.waitForInit().then(() => RNAudio.setSource(this._audioId, v))
+    this.waitForInit().then(() => RNAudio.setSource(this._audioId, this._source))
   }
   get src() {
     return this._data.src
