@@ -1,13 +1,12 @@
 {
   "presets": [
-    "react-native"
-  ],
-  "plugins": [
-    "transform-regenerator",
-    [ "module-resolver", {
-      "alias": {
-        "react-native-audio-polyfill": "."
+    [ "env" , {
+      "targets": {
+        "browsers": "last 4 versions"
       }
     }]
   ],
+  "plugins": [
+    "transform-object-rest-spread"
+  ]
 }

@@ -4,13 +4,8 @@
   "description": "Audio polyfill for desktop and native",
   "main": "index.js",
   "scripts": {
-    "ios:build": "cd test && react-native run-ios",
-    "ios:start": "rm -rf $TMPDIR/react-* && watchman watch-del-all adb reverse tcp:8081 tcp:8081 && ./node_modules/react-native/packager/packager.sh --root test",
-    "android:start": "rm -rf $TMPDIR/react-* && watchman watch-del-all adb reverse tcp:8081 tcp:8081 && ./node_modules/react-native/packager/packager.sh --root test",
-    "android:log": "$ANDROID_HOME/platform-tools/adb logcat *:S ReactNative:V ReactNativeJS:V",
-    "android:build": "cd test && react-native run-android",
-    "lint": "eslint src test",
-    "lint:fix": "eslint src test --fix"
+    "prepublishOnly": "npm run build",
+    "build": "rm -rf lib && babel src --out-dir lib"
   },
   "bugs": {
     "url": "https://github.com/yusukeshibata/react-native-audio-polyfill/issues"
@@ -29,23 +24,9 @@
     "babel-cli": "^6.24.1",
     "babel-core": "^6.24.1",
     "babel-eslint": "^7.2.3",
-    "babel-loader": "^7.0.0",
-    "babel-plugin-module-resolver": "^2.7.1",
-    "babel-plugin-transform-regenerator": "^6.24.1",
-    "babel-polyfill": "^6.23.0",
-    "babel-preset-es2017": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-react-native": "1.9.1",
-    "babel-preset-stage-0": "^6.24.1",
-    "babylon": "6.17.0",
-    "eslint": "^3.19.0",
-    "eslint-loader": "^1.7.1",
-    "fsevents": "^1.1.1",
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4",
-    "react-native": "0.41",
-    "webpack": "2.4.1",
-    "webpack-dev-server": "^2.4.5"
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "eslint": "^3.19.0"
   },
   "keywords": [
     "react-native",
