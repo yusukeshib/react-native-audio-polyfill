@@ -255,6 +255,9 @@ export default class Audio {
       this._source = v
       return
     }
+    if(typeof v === 'string') {
+      v = { uri: v }
+    }
     this._source = resolveAssetSource(v)
     if(this._source.uri.startsWith('file://')) {
       const path = this._source.uri.substr('file://'.length)
