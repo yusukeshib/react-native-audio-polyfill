@@ -95,40 +95,40 @@ static int __id__ = 1;
 - (void)_load {
   NSString *source = [self getStringForKey:@"src"];
   NSString *currentSource = [self getStringForKey:@"currentSrc"];
-  
+
   if(loaded && [currentSource isEqualToString:source]) return;
-  
+
   // dispose if loaded
   if(loaded) {
     loaded = NO;
     player = nil;
   }
-  
+
   // RCTLogInfo(@"Audio loading source:%@", source);
-  
+
   [self setString:source forKey:@"currentSrc"];
   if([source isEqualToString:@""]) return;
 
   loaded = YES;
-  
+
   NSError* error;
   NSURL* url;
-  
+
   // remote
   // base64
   if([source hasPrefix:@"http"] || [source hasPrefix:@"data:"]) {
     url = [NSURL URLWithString:[source stringByRemovingPercentEncoding]];
   }
-  
+
   // local
   else {
     url = [NSURL fileURLWithPath:[source stringByRemovingPercentEncoding]];
   }
-  
+
   player = [[AVAudioPlayer alloc] initWithData:[[NSData alloc] initWithContentsOfURL:url] error:&error];
   player.delegate = self;
   player.enableRate = YES;
-  
+
   [player prepareToPlay];
   [self _setDuration:player.duration];
   [self emitEvent:@"loadedmetadata"];
@@ -152,7 +152,7 @@ static int __id__ = 1;
   [self emitEvent:@"play"];
   [self emitEvent:@"playing"];
   timer = [NSTimer
-    timerWithTimeInterval:1.0
+    timerWithTimeInterval:0.2
                    target:self
                  selector:@selector(onTimeUpdate:)
                  userInfo:nil
@@ -171,7 +171,7 @@ static int __id__ = 1;
 
 - (void)play {
   [self load];
-  
+
   if(player == nil) return;
   if([player isPlaying]) return;
   double pos = player.currentTime;
@@ -289,36 +289,36 @@ static int __id__ = 1;
     [self play];
   }
 }
-     
+
 - (void)setPlaybackRate:(double)v {
   [self setDouble:v forKey:@"playbackRate"];
   if(player == nil) return;
   player.rate = v;
   [self emitEvent:@"ratechange"];
 }
-     
+
 - (void)_setPlayed:(BOOL)v {
   [self setBool:v forKey:@"played"];
 }
-     
+
 - (void)setPreload:(NSString *)v {
   [self setString:v forKey:@"preload"];
   if(player == nil) return;
   // TODO
 }
-     
+
 - (void)_setSeekable:(BOOL)v {
   [self setBool:v forKey:@"seekable"];
 }
-     
+
 - (void)_setSeeking:(BOOL)v {
   [self setBool:v forKey:@"seeking"];
 }
-     
+
 - (void)setTextTracks:(NSString *)v {
   [self setString:v forKey:@"textTracks"];
 }
-     
+
 - (void)setVolume:(double)v {
   [self setDouble:v forKey:@"volume"];
   if(player == nil) return;
@@ -335,7 +335,7 @@ static int __id__ = 1;
   if(src != nil) [self _load];
 }
 
-- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player 
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player
                        successfully:(BOOL)flag {
   [self emitEvent:@"ended"];
   if([self getBoolForKey:@"loop"] == YES) {
