@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
   s.name           = "RNAudio"
   s.version        = version
   s.summary        = "Audio polyfill for React Native"
-  s.homepage       = ""
+  s.homepage       = "https://github.com/yusukeshibata/react-native-audio-polyfill"
   s.license        = "MIT"
   s.author         = { "Yusuke Shibata" => "shibata@fata.io" }
   s.platform       = :ios, "7.0"
